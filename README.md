@@ -20,7 +20,7 @@ _Illustration of the effect of changing the curve fitting parameters of Eq. (4) 
 
 _Relative contribution of the rod, cone, and melanopsin photoresponse to the spectral sensitivity of the PLR over time. The time course of light adaptation of the rod (■), cone (♦), and melanopsin (●) photoresponses while maintaining a half maximal PLR with (A) no background present, (B) a 50 td adapting background, and (C) a three-quarter maximal PLR with a 50 td adapting background. Light adaptation was calculated by the combining the difference in absolute irradiance necessary to maintain these responses with the change in relative contribution of each of the photoresponses to the composite spectral sensitivity function generated for each duration condition of each of the three experiments (see Section 2.4 for details). Each point is relative to the most sensitive photoresponse at the shortest duration condition. The smooth line through each data set is the best fit of a three parameter single exponential decay function to the data._
 
-![Results Table](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/images_biblio/https://github.com/petteriTeikari/photoreceptor_fit/blob/master/images_biblio/mcdougalGamlin2010_quickPoolingResultsTable.png "Results Table")
+![Results Table](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/images_biblio/mcdougalGamlin2010_quickPoolingResultsTable.png "Results Table")
 
 ### Kurtenbach et al.(1999): Spectral Opponency
 
