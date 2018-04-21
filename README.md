@@ -40,7 +40,7 @@ Now with spectral opponency, we can start seeing these notches as shown by [Rea 
 
 #### Fitting the 65yrs old data (trying at LRC)
 
-Data from [Thapan et al. 2001](), [Brainard et al. 2001](); and models from [Rea et al. (2005)[https://doi.org/10.1016/j.brainresrev.2005.07.002], [Takahashi et al. 2011](https://doi.org/10.2150/jlve.35.123), [Gall/DIN 20xx](), and Melanopic function from [Enezi et al. 2011](https://doi.org/10.1177/0748730411409719)
+Data from [Thapan et al. 2001](), [Brainard et al. 2001](); and models from [Rea et al. (2005)[https://doi.org/10.1016/j.brainresrev.2005.07.002], [Takahashi et al. 2011](https://doi.org/10.2150/jlve.35.123), [Gall 2004](https://core.ac.uk/download/pdf/33447243.pdf) / [DIN Standard, Lang 2011](http://dx.doi.org/10.1117/2.1201101.003442), and Melanopic function from [Enezi et al. 2011](https://doi.org/10.1177/0748730411409719)
 
 Fitting when normalized to unity in linear domain
 
@@ -64,8 +64,6 @@ If one would actually remember the details, but the components of their model
 
 _See [the build-up](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/biblio/reaMelatonin_manuscript.pdf) on how this was imagined back in 2013
 
-
-
 ### Enter the "notches" and "bumps"
 
 From : _"[Krastel, Alexandridis, and Gertz (1985)](https://doi.org/10.1159/000309536) provided the **first evidence that the pupillary system has access to a "color opponent" visual process**. Krastel et al. showed that the pupillary action spectrum for chromatic flashes on a steady-white background was virtually identical to the spectral sensitivity curve obtained psychophysically under the same stimulus conditions. That is, the action spectrum has **three prominent lobes** with maxima in a long, middle, and short wavelength region and has a **prominent dip** in sensitivity near 570 nm, resembling what visual psychophysicists call the **"Sloan notch"** (see also [Schwartz 2002](https://doi.org/10.1046/j.1475-1313.2000.00535.x), [Calkins et al. 1992](https://doi.org/10.1016/0042-6989(92)90098-4))."_
@@ -77,10 +75,29 @@ From : _"[Krastel, Alexandridis, and Gertz (1985)](https://doi.org/10.1159/00030
 
 [Kimura and Young (1995)](http://dx.doi.org/10.1016/0042-6989(94)00188-R)
 
-![Sloan Notch](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/images_biblio/
-kimuraYoung1995_sloanNotch.png "Sloan Notch")
+![Sloan Notch](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/images_biblio/kimuraYoung1995_sloanNotch.png "Sloan Notch")
 
 _Action spectra derived from the ON, OFF, and steady-state portions of the pupillary response waveform. **(A) Action spectra for individual observers**. The ON action spectra for all observers are plotted in actual quantal sensitivity (reciprocal quanta sec -t deg-2). The psychophysical spectral sensitivity curve (bold solid lines) and other action spectra, however, were shifted vertically to illustrate their similarities and differences. The OFF and steady-state spectra for observer A were shifted by + 0.2 and -0.45, respectively. The steady-state spectrum for observer J was shifted by -0.65. The psychophysical spectral sensitivity curve, OFF and the steady-state spectra for observer M were shifted by -0.5, +0.2 and
 -0.3, respectively. Thee action spectra derived from the **high criterion ON amplitude** and from the **steady-state amplitudes**  can be reasonably described as a **linear sum** of the quantized scotopic and photopic luminous efficiency functions. The relative weights for the photopic function were 49% for observer A, 13% for observer J, and 20% for observer M. **Alternatively**, the two action spectra can be described as a **linear sum of the LWS-,MWS-, and SWS-cone spectra** (thin dotted line; Smith & Pokorny, 1975). The relative weights for LWS- and MWS-cones were 30% and 37% for observer A, 3% and 41% for observer J, and 14% and 20% for observer M, respectively._
 
+### Spitschan et al. (2014): PLR and spectral opponency revisited
 
+[Spitschan et al. (2014)](https://dx.doi.org/10.1073/pnas.1400942111)
+
+_Our work reveals a curious, opponent response to blue light in the otherwise familiar pupillary light response. Increased **stimulation of S cones can cause the pupil to dilate**, but this effect is usually masked by a stronger and opposite response from melanopsin-containing cells._
+
+![Init fit](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/figures_out/spitschan2014_opponency.png "Init fit")
+
+### Woelders et al. (2018): PLR and spectral opponency revisited
+
+[Woelders et al. (2018)](https://doi.org/10.1073/pnas.1716281115)
+
+_We show that selectively activating **L-cones** or **melanopsin** constricts the pupil whereas **S-** or **M-cone** activation **paradoxically dilates** the pupil. Intrinsically photosensitive RGCs therefore appear to signal color on **yellow/blue** and **red/green scales**, with blue and green cone shifts being processed as brightness decrements._
+
+### Stabio et al. (2018): M5 Color Opponency
+
+[Stabio et al. (2018)](https://doi.org/10.1016/j.neuron.2017.11.030)
+
+_Serial electron microscopic reconstructions revealed that **M5 cells receive selective UV-opsin drive** from **Type 9 cone bipolar cells** but also **mixed cone signals from bipolar Types 6, 7, and 8**. Recordings suggest that both excitation and inhibition are driven by the ON channel and that **chromatic opponency results from M-cone-driven** surround inhibition mediated by wide-field spiking GABAergic amacrine cells. We show that M5 cells send axons to the dLGN and are thus positioned to provide chromatic signals to visual cortex. These findings underscore that melanopsin's influence extends beyond unconscious reflex functions to encompass cortical vision, perhaps including the perception of color._
+
+![Init fit](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/figures_out/stabio2018_M5.png "Init fit")
