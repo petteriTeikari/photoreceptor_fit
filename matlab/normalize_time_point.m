@@ -1,6 +1,7 @@
-function [tp_out, stats] = normalize_time_point(mat_per_lambda, ...
+function [tp_out, stats] = normalize_time_point(mat_per_tp, ...
                                       normalize_method, group, scrsz, ...
-                                      timeP, plot_ON, path_Code)
+                                      read_experim_stats_from_disk, tp_index, ...
+                                      timeP, plot_ON, path_Code, path_Data)
        
     % disp(group)    
     if plot_ON == 1
@@ -9,8 +10,8 @@ function [tp_out, stats] = normalize_time_point(mat_per_lambda, ...
     end
 
     % Easier variable names
-    x = mat_per_lambda.lambda;
-    y = mat_per_lambda.melatonin;
+    x = mat_per_tp.lambda;
+    y = mat_per_tp.melatonin;
     
     [no_of_timepoints, no_of_subjects] = size(y);  
     
@@ -32,9 +33,13 @@ function [tp_out, stats] = normalize_time_point(mat_per_lambda, ...
     end
     
     % NORMALIZE
-    if strcmp(normalize_method, 'z')
+    if strcmp(normalize_method, 'raw')
+        normStr = 'No normalization';
+    
+    elseif strcmp(normalize_method, 'z')
         normStr = 'Z-normalized';
         y = (y - mean_rep_timepoint) ./ stdev_rep_timepoint;
+        
     elseif strcmp(normalize_method, 'max') || strcmp(normalize_method, 'max_min')
         
         for sub = 1 : no_of_subjects
@@ -54,12 +59,28 @@ function [tp_out, stats] = normalize_time_point(mat_per_lambda, ...
     end
     
     % Compute the stats (per time point)
-    mean_tp = nanmean(y,2);
-    stdev_tp = nanstd(y,0,2);    
+    if read_experim_stats_from_disk == 1
+        if strcmp(group, 'OLD')
+            filename_mean = fullfile(path_Data, 'old_mean.csv');
+            filename_SD = fullfile(path_Data, 'old_SD.csv'); 
+        elseif strcmp(group, 'YOUNG')
+            filename_mean = fullfile(path_Data, 'young_mean.csv'); 
+            filename_SD = fullfile(path_Data, 'young_SD.csv'); 
+        end
+        
+        [mean_in,~,~] = importdata(filename_mean,',',1);
+        mean_per_tp = mean_in.data(:,1+tp_index); % 1 from lambda in data
+        [SD_in,~,~] = importdata(filename_SD,',',1);
+        stdev_per_tp = SD_in.data(:,1+tp_index);
+        
+    else
+        mean_per_tp = nanmean(y,2);
+        stdev_per_tp = nanstd(y,0,2);    
+    end
     
     % PLOT AVERAGED TRACE
     if plot_ON == 1
-        subplot(1,3,3); errorbar(x, mean_tp, stdev_tp, '-o', 'MarkerFaceColor', 'k'); title('Averaged')
+        subplot(1,3,3); errorbar(x, mean_per_tp, stdev_per_tp, '-o', 'MarkerFaceColor', 'k'); title('Averaged')
         
     
         % Save to disk
@@ -73,7 +94,7 @@ function [tp_out, stats] = normalize_time_point(mat_per_lambda, ...
     % OUTPUT
     tp_out = y;
     stats.x = x;
-    stats.y = mean_tp;
-    stats.err = stdev_tp;
+    stats.y = mean_per_tp;
+    stats.err = stdev_per_tp;
 
     

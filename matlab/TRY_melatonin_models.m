@@ -18,11 +18,12 @@ function TRY_melatonin_models()
 %% Normalize the data going through all the time points
 
     % Parameters
-    normalize_method = {'max_min'};    
+    normalize_method = {'raw'};    
     model_strings = {'simple'};
     
     % Settings
     timepoints_strings = {'15 min'; '30 min'; '45 min'; '60min'};
+    read_experim_stats_from_disk = 1;
     plot_ON_norm = 0;
     plot_ON_fit = 0;
     
@@ -33,11 +34,13 @@ function TRY_melatonin_models()
                 % NORMALIZE, always the same independent of the model type
                 [OLD_norm{tp}{norm}, OLD_stats{tp}{norm}] = normalize_time_point(OLD{tp}, ...
                                     normalize_method{norm}, 'OLD', scrsz, ...
-                                    timepoints_strings{tp}, plot_ON_norm, path_Code);
+                                    read_experim_stats_from_disk, tp, ...
+                                    timepoints_strings{tp}, plot_ON_norm, path_Code, path_Data);
 
                 [YOUNG_norm{tp}{norm}, YOUNG_stats{tp}{norm}] = normalize_time_point(YOUNG{tp}, ... 
                                      normalize_method{norm}, 'YOUNG', scrsz, ...
-                                     timepoints_strings{tp}, plot_ON_norm, path_Code);
+                                     read_experim_stats_from_disk, tp, ...
+                                     timepoints_strings{tp}, plot_ON_norm, path_Code, path_Data);
 
                 % FIT
                 OLD_FIT{tp}{norm}{model} = fit_model_to_melatonin_wrapper(OLD_norm{tp}{norm}, ...

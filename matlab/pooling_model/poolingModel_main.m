@@ -123,7 +123,7 @@ function [spec, points, stats, actSpectra, x, fval, output_struct, statParam, x0
         % Define options for minimization function
             optimOpt = optimset('LargeScale','off', 'Display', 'on');
             optimOpt = optimset(optimOpt, 'Algorithm', 'interior-point');
-            optimOpt = optimset(optimOpt, 'UseParallel', 'always');                
+            % optimOpt = optimset(optimOpt, 'UseParallel', 'always');                
             
         %% Optimize using fmincon           
             [x, fval, exitflag, output_struct] = fmincon(f,x0,A,b,Aeq,beq,lb,ub,nonlcon,optimOpt);
