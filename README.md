@@ -2,7 +2,7 @@
 
 Init `simple` fit (meaning the model from [McDougal and Gamlin (2010)](https://doi.org/10.1016/j.visres.2009.10.012) for the spectral sensitivity:
 
-![Init fit](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/images_biblio/quickpool_simple_init.png "Init fit")
+![Init fit](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/figures_out/quickpool_simple_init.png "Init fit")
 
 ## Background
 
@@ -16,7 +16,7 @@ Init `simple` fit (meaning the model from [McDougal and Gamlin (2010)](https://d
 
 _Illustration of the effect of changing the curve fitting parameters of Eq. (4) on the composite spectral sensitivity derived from the combination of rod and cone spectral sensitivities. Panels A, C, and E demonstrate the effect of changing the value of the parameter k in Eq. (4) to 1 (A), 2 (C), and 100 (E). Panels B, D, and F demonstrate the effect of changing the relative contribution of the rod and cone signals on the spectral sensitivity of the overlying function, by setting c = 0.5r (B), c = 0.1r (D), and c = 0.03r (F)._
 
-![Results](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/fimages_biblio/mcdougalGamlin2010_quickPoolingResults.png "Results")
+![Results](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/images_biblio/mcdougalGamlin2010_quickPoolingResults.png "Results")
 
 _Relative contribution of the rod, cone, and melanopsin photoresponse to the spectral sensitivity of the PLR over time. The time course of light adaptation of the rod (■), cone (♦), and melanopsin (●) photoresponses while maintaining a half maximal PLR with (A) no background present, (B) a 50 td adapting background, and (C) a three-quarter maximal PLR with a 50 td adapting background. Light adaptation was calculated by the combining the difference in absolute irradiance necessary to maintain these responses with the change in relative contribution of each of the photoresponses to the composite spectral sensitivity function generated for each duration condition of each of the three experiments (see Section 2.4 for details). Each point is relative to the most sensitive photoresponse at the shortest duration condition. The smooth line through each data set is the best fit of a three parameter single exponential decay function to the data._
 
@@ -60,7 +60,7 @@ If one would actually remember the details, but the components of their model
 
 #### Petteri's schematic
 
-![Init fit](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/figures_out/petteri_retinalCircuit.png "Init fit")
+![Init fit](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/figures_out/retinalCircuit.png "Init fit")
 
 _See [the build-up](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/biblio/reaMelatonin_manuscript.pdf) on how this was imagined back in 2013
 
@@ -86,7 +86,7 @@ _Action spectra derived from the ON, OFF, and steady-state portions of the pupil
 
 _Our work reveals a curious, opponent response to blue light in the otherwise familiar pupillary light response. Increased **stimulation of S cones can cause the pupil to dilate**, but this effect is usually masked by a stronger and opposite response from melanopsin-containing cells._
 
-![Init fit](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/figures_out/spitschan2014_opponency.png "Init fit")
+![Init fit](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/images_biblio/spitschan2014_opponency.png "Init fit")
 
 ### Woelders et al. (2018): PLR and spectral opponency revisited
 
@@ -100,4 +100,4 @@ _We show that selectively activating **L-cones** or **melanopsin** constricts th
 
 _Serial electron microscopic reconstructions revealed that **M5 cells receive selective UV-opsin drive** from **Type 9 cone bipolar cells** but also **mixed cone signals from bipolar Types 6, 7, and 8**. Recordings suggest that both excitation and inhibition are driven by the ON channel and that **chromatic opponency results from M-cone-driven** surround inhibition mediated by wide-field spiking GABAergic amacrine cells. We show that M5 cells send axons to the dLGN and are thus positioned to provide chromatic signals to visual cortex. These findings underscore that melanopsin's influence extends beyond unconscious reflex functions to encompass cortical vision, perhaps including the perception of color._
 
-![Init fit](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/figures_out/stabio2018_M5.png "Init fit")
+![Init fit](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/images_biblio/stabio2018_M5.png "Init fit")
