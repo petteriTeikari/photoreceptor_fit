@@ -96,5 +96,6 @@ function [tp_out, stats] = normalize_time_point(mat_per_tp, ...
     stats.x = x;
     stats.y = mean_per_tp;
     stats.err = stdev_per_tp;
+    stats.err_relative = stdev_per_tp ./ mean_per_tp;
 
     
