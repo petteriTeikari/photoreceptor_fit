@@ -1,12 +1,35 @@
 # photoreceptor_fit
 
-Init `simple` fit (meaning the model from [McDougal and Gamlin (2010)](https://doi.org/10.1016/j.visres.2009.10.012) for the spectral sensitivity:
+Init `simple` fit (meaning the model from [McDougal and Gamlin (2010)](https://doi.org/10.1016/j.visres.2009.10.012) for the spectral sensitivity (with no spectral opponency):
 
 ![YOUNG](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/figures_out/quickpool_YOUNG.png "YOUNG")
 ![OLD](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/figures_out/quickpool_OLD.png "OLD")
 
+## Spectral Opponency: Spitschan et al. (2014)
 
-## Background
+[Spitschan et al. (2014)](https://dx.doi.org/10.1073/pnas.1400942111): **S = Melanopsin + (MWS+LWS) - SWS** *+Rods (PT)* 
+
+![OLD ~Spitschan (2014)](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/figures_out/quickpool_OLD_spitschan_opponency_weighted.png "OLD ~Spitschan (2014)")
+
+_When S-cones are inhibitory (rod contribution can be easily set to zero in the code later)_
+
+### Assuming that all the measurements are equally valuable
+
+![OLD ~Spitschan (2014)](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/figures_out/quickpool_OLD_spitschan_opponency_no_weights.png "OLD ~Spitschan (2014)")
+
+## Spectral Opponency: Woelders et al. (2018)
+
+[Woelders et al. (2018)](https://doi.org/10.1073/pnas.1716281115): **S = Melanopsin -MWS +LWS - SWS** *+Rods (PT)* 
+
+![OLD ~Woelders (2018)](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/figures_out/quickpool_OLD_woelders_opponency_weighted.png "OLD ~Woelders (2018)")
+
+_When S-cones **and M-cones** are inhibitory, and only melanopsin and L-cones are excitatory (rod contribution can be easily set to zero in the code later)_
+
+### Assuming that all the measurements are equally valuable
+
+![OLD ~Spitschan (2014)](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/figures_out/quickpool_OLD_woelders_opponency_no_weights.png "OLD ~Spitschan (2014)")
+
+# Background
 
 ### McDougal and Gamlin (2010): No Spectral Opponency
 
