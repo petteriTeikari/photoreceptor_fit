@@ -3,7 +3,7 @@ function visualize_pooling_models(OLD_FIT, YOUNG_FIT, OLD_stats, YOUNG_stats, ..
                                      tp_ind, norm_ind, model_ind, error_for_fit_string, ...
                                      timepoints_strings, scrsz)
     
-   load('visual_var.mat')
+   % load('visual_var.mat')
    close all
    
    plotStyle.xLims = [400 640];
@@ -138,8 +138,13 @@ function spectral_fit(fit_per_tp, stat_per_tp, ...
       elseif strcmp(model_string, 'something else')
           
       else
-          error(['For some reason your model_string changed to unsupported one: ', model_string])
-          
+          % error(['For some reason your model_string changed to unsupported one: ', model_string])
+          spectra = populate_spectra(fit_per_tp.x0_names, ...
+                                     fit_per_tp.final_x, ...
+                                     fit_per_tp.actSpectra, ...
+                                     header_names_simple, ...
+                                     multiplier_indices_simple, ...
+                                     output_names_simple);
       end      
       
       plot_usedSpectra(spectra, tp)
@@ -275,9 +280,15 @@ function plot_each_subplot(fit, stats, ...
     % set default style
     style = setDefaultFigureStyling();         
     
+    % normalize
+    y_max = max(y);
+    y = y / y_max;
+    multip = max(y) / y_max;
+    err = err .* multip;
+    
     hold on
     e(1) = errorbar(x, y, err, 'ko', 'MarkerFaceColor', [0 0.447 0.74], 'Color', [.3 .3 .3]);
-    e(2) = plot(lambda, spectrumFit, 'LineWidth',2, 'Color',[1 0 0.6]);    
+    e(2) = plot(lambda, multip*spectrumFit, 'LineWidth',2, 'Color',[1 0 0.6]);    
     hold off
 
     titleString = [group, ': ', tp_string, ' (', model_string, ')'];
@@ -297,6 +308,7 @@ function plot_each_subplot(fit, stats, ...
     %        legend('boxoff')
 
     set(gca, 'XLim', [400 640])        
+    set(gca, 'YLim', [-0.4 1.2])        
         %set(lab, 'FontName', style.fontName, 'FontSize', style.fontBaseSize, 'FontWeight', 'bold')    
         %set(tit, 'FontName', style.fontName, 'FontSize', style.fontBaseSize+1, 'FontWeight', 'bold')            
         % set(leg, 'FontSize', style.fontBaseSize-1, 'FontName', style.fontName)

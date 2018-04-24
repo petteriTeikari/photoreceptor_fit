@@ -62,7 +62,7 @@ function [spec, points, stats, actSpectra, x, fval, output_struct, statParam, x0
                 r0      = contr(3);
                 k1      = comb_k(1);
                 k2      = comb_k(2);
-                fMe0    = fMe;
+                inhMWS  = oppon(4);
                 fB0     = oppon(1);
                 fD0     = oppon(2);
                 fE0     = oppon(3);                
@@ -80,19 +80,25 @@ function [spec, points, stats, actSpectra, x, fval, output_struct, statParam, x0
             actSpectra = define_actionSpectra(lambda_nomo, peak, group, templates, callFrom);
             
          % Parameter that can be changed during optimization
-            x0 = [m0; c0; r0; k1; k2; fMe0; fB0; fD0; fE0; dens_R; dens_C; dens_CS; dens_M];
-            x0_names = {'m0'; 'c0'; 'r0'; 'k1'; 'k2'; 'fMe0'; 'fB0'; 'fD0'; 'fE0'; 'dens_R'; 'dens_C'; 'dens_CS'; 'dens_M'};
+            x0 = [m0; c0; r0; k1; k2; inhMWS; fB0; fD0; fE0; dens_R; dens_C; dens_CS; dens_M];
+            x0_names = {'m0'; 'c0'; 'r0'; 'k1'; 'k2'; 'inhMWS'; 'fB0'; 'fD0'; 'fE0'; 'dens_R'; 'dens_C'; 'dens_CS'; 'dens_M'};
                 
         % MANIPULATE THESE if you want to CONSTRAIN some variables
         % We are defining the free parameters for AIC, from these
         % automatically, so we do not want to keep the opponent model
         % parameters non-fixed
-        if strcmp(mode, 'simple')
-            lb = [0.0; 0.03; 0.1; 1.0; 10.0; 0.10; 1.5; 1.5; 1.25; 0.40; 0.38; 0.30; dens_M]; % lower bounds for x0 variables
-            ub = [1.5; 1.12; 1.5; 1.0; 10.0; 1.4; 1.5; 1.5; 1.25; 0.40; 0.38; 0.30; dens_M]; % upper bounds for x0 variables                          
-        elseif strcmp(mode, 'opponent')
-            lb = [0.0; 0.03; 0.1; 1.0; 10.0; 0.10; 0.0; 0.0; 0.00; 0.40; 0.38; 0.30; dens_M]; % lower bounds for x0 variables
-            ub = [1.5; 1.12; 1.5; 1.0; 10.0; 1.4; 1.5; 1.5; 1.25; 0.40; 0.38; 0.30; dens_M]; % upper bounds for x0 variables                          
+        if strcmp(mode, 'simple') % no opponency
+            lb = [0.0; 0.03; 0.1; 0.1; 5.0; 1; 1.5; 1.5; 1.25; 0.40; 0.38; 0.30; dens_M]; % lower bounds for x0 variables
+            ub = [1.5; 1.12; 1.5; 1.0; 20.0; 1; 1.5; 1.5; 1.25; 0.40; 0.38; 0.30; dens_M]; % upper bounds for x0 variables                          
+        elseif strcmp(mode, 'opponent_(M-L)') % Kurtenbach et al. (1999) 
+            lb = [0.0; 0.03; 0.1; 0.1; 5.0; 1; 1.5; 0.0; 0.00; 0.40; 0.38; 0.30; dens_M]; % lower bounds for x0 variables
+            ub = [1.5; 1.12; 1.5; 1.0; 20.0; 1; 1.5; 1.5; 1.25; 0.40; 0.38; 0.30; dens_M]; % upper bounds for x0 variables                          
+        elseif strcmp(mode, 'opponent_(M+L)-S') % Spitschan et al. (2014)
+            lb = [0.0; 0.03; 0.1; 1.0; 10.0; 1; 0; 0.0; 0.00; 0.40; 0.38; 0.30; dens_M]; % lower bounds for x0 variables
+            ub = [1.5; 1.12; 1.5; 1.0; 10.0; 1; 1.5; 1.5; 1.25; 0.40; 0.38; 0.30; dens_M]; % upper bounds for x0 variables                          
+        elseif strcmp(mode, 'opponent_(+L-M)-S') %  Woelders et al. (2018)
+            lb = [0.0; 0.03; 0.1; 1.0; 10.0; 0; 0.0; 0.0; 0.00; 0.40; 0.38; 0.30; dens_M]; % lower bounds for x0 variables
+            ub = [1.5; 1.12; 1.5; 1.0; 10.0; 1.5; 1.5; 1.5; 1.25; 0.40; 0.38; 0.30; dens_M]; % upper bounds for x0 variables                          
         end
             
         % Define the contents statParam

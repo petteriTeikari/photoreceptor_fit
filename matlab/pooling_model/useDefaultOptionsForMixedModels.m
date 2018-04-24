@@ -64,6 +64,9 @@ function options = useDefaultOptionsForMixedModels()
                 fB0_def = 0.2; 
                 fD0_def = 0.2;       
                 fE0_def = 1.25; % constant at the paper                 
+                
+            % Inhibitory MWS component from Woelders
+                inh_MWS = 0.3; % initial guess
     
         %% Compile this to structure
         options.poolingModel.mode    = modeDef;
@@ -72,7 +75,7 @@ function options = useDefaultOptionsForMixedModels()
         options.poolingModel.p       = p_def;
         options.poolingModel.densit  = [dens_M_def dens_C_def dens_CS_def dens_R_def]; % [OPN4 Cone S-Cone Rod]
         options.poolingModel.fMe     = fMe0_def;
-        options.poolingModel.oppon   = [fB0_def fD0_def fE0_def]; % [fB0 fD0 fE0]
+        options.poolingModel.oppon   = [fB0_def fD0_def fE0_def inh_MWS]; % [fB0 fD0 fE0]
         options.poolingModel.bound   = [];
         options.poolingModel.costF   = []; 
         options.poolingModel.linLog  = linLog;

@@ -28,8 +28,8 @@ function TRY_melatonin_models()
 
     % Parameters
     normalize_method = {'raw'};    
-    model_strings = {'simple'};
-    error_for_fit_string = 'variance_relative';
+    model_strings = {'opponent_(M+L)-S'};
+    error_for_fit_string = 'no_weighing'; % 'variance_relative'; % ; % 'variance_relative';
     
     % Settings
     timepoints_strings = {'15 min'; '30 min'; '45 min'; '60min'};

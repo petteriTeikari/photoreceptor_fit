@@ -99,5 +99,6 @@ function [tp_out, stats] = normalize_time_point(mat_per_tp, ...
     stats.stdev_relative = abs(stdev_per_tp ./ mean_per_tp);
     stats.variance = stdev_per_tp .^ 2;
     stats.variance_relative = abs(stats.variance ./ mean_per_tp);
+    stats.no_weighing = ones(length(stats.variance_relative), 1);
 
     
