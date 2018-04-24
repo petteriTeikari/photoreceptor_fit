@@ -2,7 +2,10 @@
 
 Init `simple` fit (meaning the model from [McDougal and Gamlin (2010)](https://doi.org/10.1016/j.visres.2009.10.012) for the spectral sensitivity:
 
-![Init fit](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/figures_out/quickpool_simple_init.png "Init fit")
+![Init fit](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/figures_out/quickpool_simple_init_with_CG_fix.png "Init fit")
+
+_The stem plots are [fractional errors]() (stdev / mean of that wavelength), so noisy spectrum ends_
+_**Top:** YOUNG, **Bottom:** OLD_
 
 ## Background
 
