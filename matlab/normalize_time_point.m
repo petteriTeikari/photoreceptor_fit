@@ -13,8 +13,7 @@ function [tp_out, stats] = normalize_time_point(mat_per_tp, ...
     x = mat_per_tp.lambda;
     y = mat_per_tp.melatonin;
     
-    [no_of_timepoints, no_of_subjects] = size(y);  
-    
+    [no_of_timepoints, no_of_subjects] = size(y);
     
     % Mean and stdev per time point
     mean_per_lambda = nanmean(y,2);

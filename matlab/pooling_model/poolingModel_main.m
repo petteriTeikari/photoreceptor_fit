@@ -1,5 +1,5 @@
 function [spec, points, stats, actSpectra, x, fval, output_struct, statParam, x0_names] = ...
-    poolingModel_main(lambda,y,err,mode,linLog,comb_k,contr,p,densit,fMe,oppon,bound,costF,options,path)
+    poolingModel_main(lambda,y,err,group,mode,linLog,comb_k,contr,p,densit,fMe,oppon,bound,costF,options,path)
 
     spec   = [];
     points = [];
@@ -69,13 +69,15 @@ function [spec, points, stats, actSpectra, x, fval, output_struct, statParam, x0
                 dens_M  = densit(1);
                 dens_C  = densit(2);
                 dens_CS = densit(3);
-                dens_R  = densit(4); 
-           
+                dens_R  = densit(4);            
                 
         % define the action spectra used in the optimization procedure
             callFrom = 'poolingModel';            
-            [peak, templates] = poolingModel_defineNeededSpectra(mode, linLog, options);
-            actSpectra = define_actionSpectra(lambda, peak, templates, callFrom);
+            [peak, templates] = poolingModel_defineNeededSpectra(mode, group, linLog, options);
+            xLims = peak{1}.nomogInputs{7};
+            xRes = peak{1}.nomogInputs{6};
+            lambda_nomo = (xLims(1):xRes:xLims(2))';
+            actSpectra = define_actionSpectra(lambda_nomo, peak, group, templates, callFrom);
             
          % Parameter that can be changed during optimization
             x0 = [m0; c0; r0; k1; k2; fMe0; fB0; fD0; fE0; dens_R; dens_C; dens_CS; dens_M];

@@ -3,6 +3,21 @@ function visualize_pooling_models(OLD_FIT, YOUNG_FIT, OLD_stats, YOUNG_stats, ..
                                      tp_ind, norm_ind, model_ind, ...
                                      timepoints_strings, scrsz)
     
+    
+   init_plot(OLD_FIT, YOUNG_FIT, OLD_stats, YOUNG_stats, ...
+                                     model_string, normalize_method, ...
+                                     tp_ind, norm_ind, model_ind, ...
+                                     timepoints_strings, scrsz)
+                                     
+    
+    
+    
+%% SUBFUNCTIONS  
+function init_plot(OLD_FIT, YOUNG_FIT, OLD_stats, YOUNG_stats, ...
+                                     model_string, normalize_method, ...
+                                     tp_ind, norm_ind, model_ind, ...
+                                     timepoints_strings, scrsz)
+
     % Subplot layout 
     fig = figure('Color', 'w',... 
                  'Position', [0.05*scrsz(3) 0.05*scrsz(4) 0.92*scrsz(3) 0.8*scrsz(4)]);
@@ -38,12 +53,7 @@ function visualize_pooling_models(OLD_FIT, YOUNG_FIT, OLD_stats, YOUNG_stats, ..
                              xlim([400 640]); % ylim([0 1.2])
         
     end
-    
-    % Save to disk
-    
-    
-    
-%% SUBFUNCTIONS    
+
 function plot_each_subplot(fit, stats, ...
                               normalize_method, model_string, ...
                               tp)

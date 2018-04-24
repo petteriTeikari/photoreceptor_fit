@@ -4,10 +4,19 @@ function TRY_melatonin_models()
     close all    
     scrsz = get(0,'ScreenSize'); % get screen size for plotting
     
+    % Fix the paths
     fileName = mfilename; 
     fullPath = mfilename('fullpath');
     path_Code = strrep(fullPath, fileName, '');
     path_Data = fullfile(path_Code, '..', 'data');
+    
+    % add subfunctions
+    addpath(fullfile(path_Code, 'pooling_model'))
+    addpath(fullfile(path_Code, 'pooling_model', 'nomogram'))
+    addpath(fullfile(path_Code, 'pooling_model', 'templates'))
+    addpath(fullfile(path_Code, 'pooling_model', 'ocularmedia'))
+
+
     
 %% IMPORT THE DATA
     
@@ -31,27 +40,30 @@ function TRY_melatonin_models()
         for model = 1 : length(model_strings)
             for tp = 1 : length(OLD)            
 
-                % NORMALIZE, always the same independent of the model type
+                % NORMALIZE, always the same independent of the model type                
                 [OLD_norm{tp}{norm}, OLD_stats{tp}{norm}] = normalize_time_point(OLD{tp}, ...
                                     normalize_method{norm}, 'OLD', scrsz, ...
                                     read_experim_stats_from_disk, tp, ...
                                     timepoints_strings{tp}, plot_ON_norm, path_Code, path_Data);
-
+                
                 [YOUNG_norm{tp}{norm}, YOUNG_stats{tp}{norm}] = normalize_time_point(YOUNG{tp}, ... 
                                      normalize_method{norm}, 'YOUNG', scrsz, ...
                                      read_experim_stats_from_disk, tp, ...
                                      timepoints_strings{tp}, plot_ON_norm, path_Code, path_Data);
+                
 
                 % FIT
                 OLD_FIT{tp}{norm}{model} = fit_model_to_melatonin_wrapper(OLD_norm{tp}{norm}, ...
                                             OLD_stats{tp}{norm}, ...
                                             model_strings{model}, 'OLD', plot_ON_fit, ...
                                             timepoints_strings{tp}, scrsz, path_Code);
-                                        
+                
+                
                 YOUNG_FIT{tp}{norm}{model} = fit_model_to_melatonin_wrapper(YOUNG_norm{tp}{norm}, ...
                                             YOUNG_stats{tp}{norm}, ...
                                             model_strings{model}, 'YOUNG', plot_ON_fit, ...
                                             timepoints_strings{tp}, scrsz, path_Code);
+                
                              
 
             end

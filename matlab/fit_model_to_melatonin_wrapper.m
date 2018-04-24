@@ -2,10 +2,13 @@ function fit_out = fit_model_to_melatonin_wrapper(data_points, stats, ...
                                             model_name, group, plot_ON_norm, ...
                                             timepoint_string, scrsz, path_Code)
                 
-    
+    % Error to be used in the optimization
+    error_for_weighing = stats.err_relative % stats.err
+                                        
+                                        
     % QUICK POOLING
     [spec, points, stats_out, actSpectra, final_x, fval, output_struct, statParam, x0_names] = ...
-        fit_QuickPooling_simple_v2018(stats.x, stats.y, stats.err, model_name);
+        fit_QuickPooling_simple_v2018(stats.x, stats.y, error_for_weighing, group, model_name);
     
         fit_stats = calc_fitStats(points, stats.y, 0, statParam.K, 'spectrum');
 

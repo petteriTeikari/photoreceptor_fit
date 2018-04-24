@@ -1,6 +1,6 @@
 % Fit the Quick Pooling model for spectral sensitivity
 function [spec, points, stats, actSpectra, x, fval, output_struct, statParam, x0_names] = ...
-    fit_QuickPooling_simple_v2018(x,y,err,model)  
+    fit_QuickPooling_simple_v2018(x,y,err,group,model)  
 
     % Quick RF. 1974. 
     % A vector-magnitude model of contrast detection. 
@@ -18,7 +18,7 @@ function [spec, points, stats, actSpectra, x, fval, output_struct, statParam, x0
     
         % Use a wrapper function
         [spec, points, stats, actSpectra, x, fval, output_struct, statParam, x0_names] = ...
-            fit_mixedModelsForMelatonin(x,y,err,model,options);
+            fit_mixedModelsForMelatonin(x,y,err,group,model,options);
 
         
    

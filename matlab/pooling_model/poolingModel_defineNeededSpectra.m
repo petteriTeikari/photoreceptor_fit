@@ -1,4 +1,4 @@
-function [peak, templates] = poolingModel_defineNeededSpectra(mode, linLog, options)
+function [peak, templates] = poolingModel_defineNeededSpectra(mode, group, linLog, options)
     
     if strcmpi(mode, 'simple') || strcmpi(mode, 'opponent') || strcmpi(mode, 'simpleBi') || strcmpi(mode, 'opponentBi')        
        

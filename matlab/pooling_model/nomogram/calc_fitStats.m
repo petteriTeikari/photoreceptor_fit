@@ -1,13 +1,16 @@
 function out = calc_fitStats(exp, y, error, K, mode)  
 
+    % convert to weights the error
+   
+    weights = 1 ./ error;
+    weights = weights / max(weights);
            
     % y        - fit
     % exp      - experimental data
     % N        - number of data points used to fit the experimental curve
     N = length(y);
     
-    % K        - number of free parameters 
-    
+    % K        - number of free parameters     
     
     % Calculate the total sum of square of the experimental data
     SS_diff = exp - mean(exp);           
@@ -19,11 +22,17 @@ function out = calc_fitStats(exp, y, error, K, mode)
 
     % calculate the difference between the estimation and the target (residual sum of squares)
     S_diff_resid = y - exp;
-    SS_err = real(S_diff_resid)' * real(S_diff_resid);
+    
+    % weight the residuals
+    S_diff_w = S_diff_resid .* weights;
+    
+    % the scalar to optimize
+    SS_err = real(S_diff_w)' * real(S_diff_w);
     
     degOfFreedom = length(y) - 1; 
     SS_err_norm = SS_err / degOfFreedom;
-
+    
+    
     % Calculate Akaike Information Criterion (AIC)             
     % The Akaike Information Criterion: 2*N log L+2*m, where m is the number of estimated parameters.        
     AIC = 2*(N+1) + ( (K+1) * (log( 2*pi() * (SS_err/(K+1)) ) + 1) ); % http://www.biomecardio.com/matlab/polydeg.html    
@@ -54,7 +63,7 @@ function out = calc_fitStats(exp, y, error, K, mode)
     
     if strcmp(mode, 'optim')
         % Value to be minized
-        out = SS_err_norm;       
+        out = SS_err_norm;
         
     elseif strcmp(mode, 'spectrum')        
         out.R2 = R2 + 1;
