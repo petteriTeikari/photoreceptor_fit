@@ -37,13 +37,13 @@ function actSpectra = define_actionSpectra(lambda, peak, group, templates, callF
         age_o = 65;
         lensFilter_stdObs = agedLensFilter(age_y, lambda, offset);
         
-        if strcmp(group, "OLD")
+        if strcmp(group, 'OLD')
             lensFilter_nomogram = agedLensFilter(age_o, lambda, offset);
             
             % How much more you need to filter the std observer for the old
             % group
             lensFilter_template = lensFilter_nomogram ./ lensFilter_stdObs;
-        elseif strcmp(group, "YOUNG")
+        elseif strcmp(group, 'YOUNG')
             lensFilter_nomogram = agedLensFilter(age_y, lambda, offset);
             
             % do nothing, placeholder filter
