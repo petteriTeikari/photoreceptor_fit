@@ -15,7 +15,7 @@ function options = useDefaultOptionsForMixedModels()
                 %          'opponentBi'      
                 
         %% Linear or log
-            linLog = 'lin';
+            linLog = 'log';
         
         %% Model parameters: Original model
 

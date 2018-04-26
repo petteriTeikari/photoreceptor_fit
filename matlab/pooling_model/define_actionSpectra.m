@@ -23,7 +23,6 @@ function actSpectra = define_actionSpectra(lambda, peak, group, templates, callF
         end
         
         templatePath = '';
-        whos
         
     %% DEFINE the OUTPUT
     
@@ -74,7 +73,7 @@ function actSpectra = define_actionSpectra(lambda, peak, group, templates, callF
                 % correct for the ocular media
                 if strcmp(peak{1}.nomogInputs{3}, 'log')                    
                     actSpectra{i}.spectrum = 10 .^ actSpectra{i}.spectrum_raw;
-                    actSpectra{i}.spectrum = actSpectra{i}.spectrum_raw .* lensFilter_nomogram;
+                    actSpectra{i}.spectrum = actSpectra{i}.spectrum .* lensFilter_nomogram;
                     actSpectra{i}.spectrum = log10(actSpectra{i}.spectrum);
                 else
                     actSpectra{i}.spectrum = actSpectra{i}.spectrum_raw;

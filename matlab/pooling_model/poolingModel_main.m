@@ -1,5 +1,5 @@
 function [spec, points, stats, actSpectra, x, fval, output_struct, statParam, x0_names] = ...
-    poolingModel_main(lambda,y,err,group,mode,linLog,comb_k,contr,p,densit,fMe,oppon,bound,costF,options,path)
+    poolingModel_main(lambda,y,weights_for_fit,group,mode,linLog,comb_k,contr,p,densit,fMe,oppon,bound,costF,options,path)
 
     spec   = [];
     points = [];
@@ -79,6 +79,10 @@ function [spec, points, stats, actSpectra, x, fval, output_struct, statParam, x0
             lambda_nomo = (xLims(1):xRes:xLims(2))';
             actSpectra = define_actionSpectra(lambda_nomo, peak, group, templates, callFrom);
             
+            % TODO! You could do debug plot here to make sure that
+            % actSpectra are indeed in LOG/LINEAR with OCULAR MEDIA
+            % correction
+            
          % Parameter that can be changed during optimization
             x0 = [m0; c0; r0; k1; k2; inhMWS; fB0; fD0; fE0; dens_R; dens_C; dens_CS; dens_M];
             x0_names = {'m0'; 'c0'; 'r0'; 'k1'; 'k2'; 'inhMWS'; 'fB0'; 'fD0'; 'fE0'; 'dens_R'; 'dens_C'; 'dens_CS'; 'dens_M'};
@@ -88,11 +92,11 @@ function [spec, points, stats, actSpectra, x, fval, output_struct, statParam, x0
         % automatically, so we do not want to keep the opponent model
         % parameters non-fixed
         if strcmp(mode, 'simple') % no opponency
-            lb = [0.0; 0.03; 0.1; 0.1; 5.0; 1; 1.5; 1.5; 1.25; 0.40; 0.38; 0.30; dens_M]; % lower bounds for x0 variables
-            ub = [1.5; 1.12; 1.5; 1.0; 20.0; 1; 1.5; 1.5; 1.25; 0.40; 0.38; 0.30; dens_M]; % upper bounds for x0 variables                          
-        elseif strcmp(mode, 'opponent_(M-L)') % Kurtenbach et al. (1999) 
-            lb = [0.0; 0.03; 0.1; 0.1; 5.0; 1; 1.5; 0.0; 0.00; 0.40; 0.38; 0.30; dens_M]; % lower bounds for x0 variables
-            ub = [1.5; 1.12; 1.5; 1.0; 20.0; 1; 1.5; 1.5; 1.25; 0.40; 0.38; 0.30; dens_M]; % upper bounds for x0 variables                          
+            lb = [0.0; 0.03; 0.1; 1.0; 10.0; 1; 1.5; 1.5; 1.25; 0.40; 0.38; 0.30; dens_M]; % lower bounds for x0 variables
+            ub = [1.5; 1.12; 1.5; 1.0; 10.0; 1; 1.5; 1.5; 1.25; 0.40; 0.38; 0.30; dens_M]; % upper bounds for x0 variables                          
+        elseif strcmp(mode, 'opponent_(L-M)') % Kurtenbach et al. (1999) 
+            lb = [0.0; 0.03; 0.1; 1.0; 10.0; 1; 1.5; 0.0; 0.00; 0.40; 0.38; 0.30; dens_M]; % lower bounds for x0 variables
+            ub = [1.5; 1.12; 1.5; 1.0; 10.0; 1; 1.5; 1.5; 1.25; 0.40; 0.38; 0.30; dens_M]; % upper bounds for x0 variables                          
         elseif strcmp(mode, 'opponent_(M+L)-S') % Spitschan et al. (2014)
             lb = [0.0; 0.03; 0.1; 1.0; 10.0; 1; 0; 0.0; 0.00; 0.40; 0.38; 0.30; dens_M]; % lower bounds for x0 variables
             ub = [1.5; 1.12; 1.5; 1.0; 10.0; 1; 1.5; 1.5; 1.25; 0.40; 0.38; 0.30; dens_M]; % upper bounds for x0 variables                          
@@ -111,7 +115,7 @@ function [spec, points, stats, actSpectra, x, fval, output_struct, statParam, x0
             statParam.N = length(~isnan(y));
             
             % Number of free parameters
-            statParam.K = defineNoFreeParameters(x0, ub, lb, mode);     
+            statParam.K = defineNoFreeParameters(x0, ub, lb, mode);
                                     
         % Inequality estimation parameters, 'doc fmincon' for more info
         % when defined as empty ([]) these have no significance to anything
@@ -126,24 +130,27 @@ function [spec, points, stats, actSpectra, x, fval, output_struct, statParam, x0
             % options.modeNomogram = 'dynamic'; % updated on each iteration if 'dynamic', useful for fMe
             options.modeNomogram = 'static'; % for 'simple' mode to initialize the shapes only once
             options.biPhi = 0.70; % relative quantum efficiency
-            f = @(x) poolingModel_function(x, lambda, y, err, mode, statParam, output, actSpectra, options);      
+            f = @(x) poolingModel_function(x, lambda, y, weights_for_fit, mode, statParam, output, actSpectra, options);
 
         % Define options for minimization function
             optimOpt = optimset('LargeScale','off', 'Display', 'on');
             optimOpt = optimset(optimOpt, 'Algorithm', 'interior-point');
             % optimOpt = optimset(optimOpt, 'UseParallel', 'always');                
             
-        %% Optimize using fmincon           
+        %% Optimize using fmincon   
             [x, fval, exitflag, output_struct] = fmincon(f,x0,A,b,Aeq,beq,lb,ub,nonlcon,optimOpt);
            
-        % After optimization, obtain the spectrum and statistical
-        % parameters with the optimized values
-            output = 'spectrum';            
-            spec = poolingModel_function(x, lambda, y, err, mode, statParam, output, actSpectra, options);
+            % After optimization, obtain the spectrum and statistical
+            % parameters with the optimized values
+            output = 'spectrum';
+            
+            % TODO! WHy weights become 0 with a length of 1?
+            spec = poolingModel_function(x, lambda, y, weights_for_fit, mode, statParam, output, actSpectra, options);
         
         %% Get the stats
-            output = 'optim';            
-            stats = poolingModel_function(x, lambda, y, err, mode, statParam, output, actSpectra, options);
+        
+            output = 'optim';
+            stats = poolingModel_function(x, lambda, y, weights_for_fit, mode, statParam, output, actSpectra, options);
         
         %% And the points 
         

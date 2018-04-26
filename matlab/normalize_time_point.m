@@ -1,13 +1,16 @@
 function [tp_out, stats] = normalize_time_point(mat_per_tp, ...
-                                      normalize_method, group, scrsz, ...
+                                      normalize_method, group, fit_domain, scrsz, ...
                                       read_experim_stats_from_disk, tp_index, ...
                                       timeP, plot_ON, path_Code, path_Data)
-       
+              
+                                
     % disp(group)    
     if plot_ON == 1
         fig = figure('Color', 'white',... 
                         'Position', [0.05*scrsz(3) 0.48*scrsz(4) 0.90*scrsz(3) 0.4*scrsz(4)]);
     end
+    
+    
 
     % Easier variable names
     x = mat_per_tp.lambda;
@@ -50,7 +53,7 @@ function [tp_out, stats] = normalize_time_point(mat_per_tp, ...
             end
             y(:,sub) = y(:,sub) / max(y(:,sub));
         end
-    end
+    end      
     
     % PLOT NORMALIZED RESULT
     if plot_ON == 1
@@ -77,10 +80,84 @@ function [tp_out, stats] = normalize_time_point(mat_per_tp, ...
         stdev_per_tp = nanstd(y,0,2);    
     end
     
+    % OUTPUT
+    tp_out = y;
+    stats.x = x;
+    stats.n = no_of_subjects;
+    
+    stats.stdev_relative = abs(stdev_per_tp ./ mean_per_tp);
+    stats.variance = stdev_per_tp .^ 2;
+    stats.variance_relative = abs(stats.variance ./ mean_per_tp);
+    stats.no_weighing = ones(length(stats.variance_relative), 1);       
+    
+    if strcmp(fit_domain, 'log')
+       
+        mean_per_tp;
+        range = max(mean_per_tp(:)) - min(mean_per_tp(:));
+        
+        % remove negative values
+        min_v = min(mean_per_tp(:));
+        
+        
+        
+        if min_v > 0
+            % get ratio between the smallest and second smallest
+            sorted = sort(mean_per_tp);
+            percentage_of_range = (sorted(2) - sorted(1)) / range;
+            ratio_min = min_v ./ sorted(2);
+            ratio_max1 = min_v ./ sorted(end);
+        else
+            sorted = sort(mean_per_tp);
+            percentage_of_range = (sorted(2) - sorted(1)) / range;
+            if sorted(1) < 0 && sorted(2) < 0
+                % TODO!
+                offset = 0.01;
+            else % only sorted(1) is negative
+                % TODO!                
+                offset = 0.01;
+            end            
+        end
+        
+        % https://stats.stackexchange.com/questions/1444/how-should-i-transform-non-negative-data-including-zeros
+        % http://robjhyndman.com/researchtips/transformations/
+        % https://en.wikipedia.org/wiki/Power_transform#Box–Cox_transformation
+        mean_per_tp = mean_per_tp - min_v;
+        
+        % define the desired offset so that the ratio between the smallest
+        % and second smallest value stays the same
+        if min_v > 0
+            sorted1 = sort(mean_per_tp);
+            offset = ratio_min * sorted1(2);
+            mean_per_tp = mean_per_tp + offset;
+            sorted2 = sort(mean_per_tp);
+            ratio_max2 = sorted2(1) ./ sorted2(end);
+        else
+            mean_per_tp = mean_per_tp + offset;
+        end
+        
+        mean_per_tp = log10(mean_per_tp);
+        
+        % normalize
+        mean_per_tp = mean_per_tp - max(mean_per_tp(:));
+        
+        % TODO! convert stdevs to LOG if you really want to, but we can
+        % still use the weights from fractional stdevs
+        
+    end
+    
+    % OUTPUT AS WELL
+    stats.y = mean_per_tp;    
+    stats.stdev = stdev_per_tp;
+    
+    
     % PLOT AVERAGED TRACE
     if plot_ON == 1
-        subplot(1,3,3); errorbar(x, mean_per_tp, stdev_per_tp, '-o', 'MarkerFaceColor', 'k'); title('Averaged')
         
+        if strcmp(fit_domain, 'log')
+            subplot(1,3,3); plot(x, mean_per_tp, '-o', 'MarkerFaceColor', 'k'); title('Averaged LOG')
+        else
+            subplot(1,3,3); errorbar(x, mean_per_tp, stdev_per_tp, '-o', 'MarkerFaceColor', 'k'); title('Averaged')
+        end
     
         % Save to disk
         filename_out = [group, '_', timeP, '_', normStr, '.png'];    
@@ -90,15 +167,6 @@ function [tp_out, stats] = normalize_time_point(mat_per_tp, ...
         
     end
     
-    % OUTPUT
-    tp_out = y;
-    stats.x = x;
-    stats.y = mean_per_tp;
-    stats.n = no_of_subjects;
-    stats.stdev = stdev_per_tp;
-    stats.stdev_relative = abs(stdev_per_tp ./ mean_per_tp);
-    stats.variance = stdev_per_tp .^ 2;
-    stats.variance_relative = abs(stats.variance ./ mean_per_tp);
-    stats.no_weighing = ones(length(stats.variance_relative), 1);
+    
 
     

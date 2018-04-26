@@ -81,7 +81,7 @@ function group_plot(FIT, STATS, group, ...
 
     % Subplot layout 
     fig = figure('Color', 'w',... 
-                 'Position', [0.05*scrsz(3) 0.025*scrsz(4) 0.92*scrsz(3) 0.95*scrsz(4)]);
+                 'Position', [0.05*scrsz(3) 0.725*scrsz(4) 0.92*scrsz(3) 0.25*scrsz(4)]);
         
     no_of_timepoints = length(timepoints_strings);
     rows = 6; % young, old
@@ -120,37 +120,45 @@ function spectral_fit(fit_per_tp, stat_per_tp, ...
                           tp, tp_string, plotStyle)   
       
       % TODO! If you want Melanopic here instead of the Gov. Nomogram
-      header_names_simple = {'OPN4 R', 'Vl', 'RODS'};
-      multiplier_indices_simple = [1 2 3]; % i.e. m0, c0, r0      
-      output_names_simple = {'Melanopsin', 'Vlambda', 'Rod'};
-      
-      if strcmp(model_string, 'simple')          
+      if strcmp(model_string, 'simple') 
+        header_names = {'OPN4 R', 'Vl', 'RODS'};
+        multiplier_indices = [1 2 3]; % i.e. m0, c0, r0      
+        output_names = {'Melanopsin', 'Vlambda', 'Rod'};
+        sum_cols = [1 2 3];
+        
+      elseif strcmp(model_string, 'opponent_(L-M)') 
+        header_names = {'OPN4 R', 'Vl', 'RODS', 'MWS', 'LWS'};
+        multiplier_indices = [1 2 3 9 8]; % i.e. m0, c0, r0      
+        output_names = {'Melanopsin', 'Vlambda', 'Rod', 'L', 'LM'};
+        sum_cols = [1 2 3 5];
+              
+      elseif strcmp(model_string, 'opponent_(M+L)-S') 
+        header_names = {'OPN4 R', 'Vl', 'RODS', 'MWS', 'LWS', 'SWS'};
+        multiplier_indices = [1 2 3 9 7 8]; % i.e. m0, c0, r0      
+        output_names = {'Melanopsin', 'Vlambda', 'Rod', 'ML', 'S', 'MLS'};
+        sum_cols = [1 2 3 6];
           
-          % Spectra contains each photoreceptor contribution, i.e.
-          % the ocular media corrected spectra with the contribution weight
-          spectra = populate_spectra(fit_per_tp.x0_names, ...
-                                     fit_per_tp.final_x, ...
-                                     fit_per_tp.actSpectra, ...
-                                     header_names_simple, ...
-                                     multiplier_indices_simple, ...
-                                     output_names_simple);
-                                 
-      elseif strcmp(model_string, 'something else')
+      elseif strcmp(model_string, 'opponent_(+L-M)-S') 
+        header_names = {'OPN4 R', 'Vl', 'RODS', 'MWS', 'LWS', 'SWS'};
+        multiplier_indices = [1 2 3 6 9 7 8]; % i.e. m0, c0, r0      
+        output_names = {'Melanopsin', 'Vlambda', 'Rod', 'M', 'L', 'S', 'LMS'};
+        sum_cols = [1 2 3 7];
+                  
+      end 
           
-      else
-          % error(['For some reason your model_string changed to unsupported one: ', model_string])
-          spectra = populate_spectra(fit_per_tp.x0_names, ...
-                                     fit_per_tp.final_x, ...
-                                     fit_per_tp.actSpectra, ...
-                                     header_names_simple, ...
-                                     multiplier_indices_simple, ...
-                                     output_names_simple);
-      end      
-      
-      plot_usedSpectra(spectra, tp)
+      % Spectra contains each photoreceptor contribution, i.e.
+      % the ocular media corrected spectra with the contribution weight
+      spectra = populate_spectra(fit_per_tp.x0_names, ...
+                                 fit_per_tp.final_x, ...
+                                 fit_per_tp.actSpectra, ...
+                                 header_names, ...
+                                 multiplier_indices, ...
+                                 output_names);                                 
+          
+      plot_usedSpectra(spectra, tp, sum_cols)
 
       
-function plot_usedSpectra(spectra, tp)
+function plot_usedSpectra(spectra, tp, sum_cols)
       
     spectraUsed_names = fieldnames(spectra);
     no_of_spectra = length(spectraUsed_names);
@@ -167,11 +175,11 @@ function plot_usedSpectra(spectra, tp)
     
     % Calculate the sums
     prev_columns_raw = spectra_mat_raw(:,1:i);
-    sum_of_prev_raw = sum(prev_columns_raw,2);    
+    sum_of_prev_raw = sum(prev_columns_raw(:,sum_cols),2);       
     spectra_mat_raw(:,i+1) = sum_of_prev_raw;
     
     prev_columns = spectra_mat(:,1:i);
-    sum_of_prev = sum(prev_columns,2);    
+    sum_of_prev = sum(prev_columns(:,sum_cols),2);
     spectra_mat(:,i+1) = sum_of_prev;
     
     % Normalize
@@ -180,7 +188,8 @@ function plot_usedSpectra(spectra, tp)
     
     % Plot
     p = plot(lambda, spectra_mat);
-    set(p(end), 'LineStyle', '--')
+    set(p(end), 'LineStyle', '--', 'LineWidth', 2, 'Color', 'k')
+    set(p(sum_cols), 'LineWidth', 2)
     
     style = setDefaultFigureStyling();   
     set(gca, 'FontSize',8, 'FontName', style.fontName,'FontWeight','normal')
@@ -210,6 +219,9 @@ function spectra_out = populate_spectra(names, x, actSpectra, ...
        % If found, add to output structure
        if isempty(Index) == 0          
            
+          % todo! ADD THE EXPONENTS!
+          % NOW JUST LINEAR SUM
+           
           spectra_out.(output_names{j}).spec = ...
               actSpectra{Index}.spectrum;
           
@@ -226,6 +238,8 @@ function residual_plot(fit_per_tp, stat_per_tp, ...
       
       residual = abs(fit_per_tp.points - stat_per_tp.y);      
       s = stem(stat_per_tp.x, residual, 'k', 'filled');
+      
+      fit_per_tp.fit_stats
       
       % set(s, 'XLim', plotStyle.xLims)
       if tp == 1
@@ -281,14 +295,16 @@ function plot_each_subplot(fit, stats, ...
     style = setDefaultFigureStyling();         
     
     % normalize
+    %{
     y_max = max(y);
     y = y / y_max;
     multip = max(y) / y_max;
     err = err .* multip;
+    %}
     
     hold on
     e(1) = errorbar(x, y, err, 'ko', 'MarkerFaceColor', [0 0.447 0.74], 'Color', [.3 .3 .3]);
-    e(2) = plot(lambda, multip*spectrumFit, 'LineWidth',2, 'Color',[1 0 0.6]);    
+    e(2) = plot(lambda, spectrumFit, 'LineWidth',2, 'Color',[1 0 0.6]);    
     hold off
 
     titleString = [group, ': ', tp_string, ' (', model_string, ')'];

@@ -1,9 +1,7 @@
-function out = calc_fitStats(exp, y, error, K, mode)  
+function out = calc_fitStats(exp, y, weights_for_fit, K, mode)  
 
+    weights_for_fit
     % convert to weights the error
-   
-    weights = 1 ./ error;
-    weights = weights / max(weights);
            
     % y        - fit
     % exp      - experimental data
@@ -24,7 +22,7 @@ function out = calc_fitStats(exp, y, error, K, mode)
     S_diff_resid = y - exp;
     
     % weight the residuals
-    S_diff_w = S_diff_resid .* weights;
+    S_diff_w = S_diff_resid .* weights_for_fit;
     
     % the scalar to optimize
     SS_err = real(S_diff_w)' * real(S_diff_w);
@@ -65,7 +63,14 @@ function out = calc_fitStats(exp, y, error, K, mode)
         % Value to be minized
         out = SS_err_norm;
         
-    elseif strcmp(mode, 'spectrum')        
+    elseif strcmp(mode, 'spectrum')    
+        
+        [y exp S_diff_resid]
+        weights_for_fit
+        S_diff_w
+        
+        aaa
+        
         out.R2 = R2 + 1;
         out.AIC = AIC;        
         out.AICc = AICc;

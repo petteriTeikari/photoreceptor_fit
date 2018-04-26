@@ -1,6 +1,6 @@
 function [peak, templates] = poolingModel_defineNeededSpectra(mode, group, linLog, options)
     
-    if strcmpi(mode, 'simple') || strcmpi(mode, 'opponent_(M-L)') || ...
+    if strcmpi(mode, 'simple') || strcmpi(mode, 'opponent_(L-M)') || ...
         strcmpi(mode, 'opponent_(M+L)-S') || strcmpi(mode, 'opponent_(+L-M)-S')
        
         % Insignificant overhead if all possible action spectra are created

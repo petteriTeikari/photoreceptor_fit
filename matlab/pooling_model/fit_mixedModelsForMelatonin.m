@@ -1,25 +1,7 @@
 % wrapper function for the lightLab library's mixed models
 function [spec, points, stats, actSpectra, x, fval, output_struct, statParam, x0_names] = ...
-    fit_mixedModelsForMelatonin(x,y,err,group,model,options)
+    fit_mixedModelsForMelatonin(x,y,weights_for_fit,fit_domain,group,model,options)
 
-    %% CHECK THE INPUTS
-
-        % if no model is given, use then 'all'
-        if nargin == 3
-            group = 'YOUNG'; % standard observer
-            model = 'all';
-            options = useDefaultOptionsForMixedModels();
-        % if no options are given
-        elseif nargin == 4
-            model = 'all';
-            options = useDefaultOptionsForMixedModels();       
-        elseif nargin == 5
-            options = useDefaultOptionsForMixedModels();       
-        elseif nargin == 6
-            %
-        else
-            errordlg('Not enough input parameters!')
-        end    
 
     %% Assign the variable names from the options to the input arguments to poolingModel_main
 
@@ -32,8 +14,10 @@ function [spec, points, stats, actSpectra, x, fval, output_struct, statParam, x0
         oppon   = options.poolingModel.oppon; % [fB0 fD0 fE0]
         bound   = options.poolingModel.bound;
         costF   = options.poolingModel.costF;
-        linLog  = options.poolingModel.linLog;
+        
+        % linLog  = options.poolingModel.linLog;
+        linLog  = fit_domain;
 
         % Call the function
         [spec, points, stats, actSpectra, x, fval, output_struct, statParam, x0_names]  = ...
-            poolingModel_main(x,y,err,group,mode,linLog,comb_k,contr,p,densit,fMe,oppon,bound,costF,options);
+            poolingModel_main(x,y,weights_for_fit,group,mode,linLog,comb_k,contr,p,densit,fMe,oppon,bound,costF,options);

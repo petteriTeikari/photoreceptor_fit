@@ -1,4 +1,4 @@
-function yOut = poolingModel_function(x, lambda, y, err, mode, statParam, output, actSpectra, options)
+function yOut = poolingModel_function(x, lambda, y, weights_for_fit, mode, statParam, output, actSpectra, options)
 
     % INPUTS
     % x       - x(1): k1
@@ -58,7 +58,7 @@ function yOut = poolingModel_function(x, lambda, y, err, mode, statParam, output
         % Opponent term, from Kurtenbach et al. (1999) 
         % http://dx.doi.org/10.1364/JOSAA.16.001541
         % LWS - x*MWS    
-        else % strcmp(mode, 'opponent_(M-L)')
+        else % strcmp(mode, 'opponent_(L-M)')
             Opp = (x(8) .* abs(LWS - (x(9) .* MWS))) .^ x(4);
         end
         
@@ -93,7 +93,7 @@ function yOut = poolingModel_function(x, lambda, y, err, mode, statParam, output
             % Combine the 3 above defined terms - ORIGINAL VERSION
             Sfit = ( OPN4 + ( (C + R).^(1/x(4)) ).^x(5)  ) .^(1/x(5));                         
             
-        elseif strcmp(mode, 'opponent_(M-L)') == 1 % from Kurtenbach et al. (1999)   
+        elseif strcmp(mode, 'opponent_(L-M)') == 1 % from Kurtenbach et al. (1999)   
             % add spectral opponency and S-cone contribution
             Sfit = ( OPN4 + ( (C + R + Opp).^(1/x(4)) ).^x(5)  ) .^(1/x(5));                  
             
@@ -125,8 +125,8 @@ function yOut = poolingModel_function(x, lambda, y, err, mode, statParam, output
         % fit is quantified finally with this single scalar cost function
         % which is minimized here        
         
-        if strcmp(output, 'optim') == 1
-            yOut = calc_fitStats(y, Sfit, err, statParam.K, output);            
+        if strcmp(output, 'optim') == 1            
+            yOut = calc_fitStats(y, Sfit, weights_for_fit, statParam.K, output);            
         else
             yOut = Sfit;
         end
