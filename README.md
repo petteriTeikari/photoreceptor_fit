@@ -1,4 +1,25 @@
-# photoreceptor_fit
+# R: Visualize the results from Matlab
+
+As R produces prettier graphs, it is nicer to use and is totally free so made it a more user-friendly script there
+
+## The model fitting
+
+![YOUNG](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/figures_out/R_young_visualization.png "YOUNG")
+![OLD](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/figures_out/R_old_visualization.png "OLD")
+
+## The time-course of photoreceptor contributions
+
+Computed, but need to be plotted
+
+## To Use
+
+Open `plot_matlab_fitting.R` and **Run All** (Ctrl+Alt+R) and see the magic happening..
+
+## To Modify
+
+The boring stuff is hidden to `plot_subfunctions.R` that you do not necessarily ever need to open. The **`plot_model_fit_per_timepoint.R`** is meant to be customized by you. So the fitting was done for values with no negative values and max then normalized to unity (was easier this way, a lot easier). So if you wanna work on the disinhibition theory around 590nm, you need to re-define your model :S
+
+# MATLAB: photoreceptor_fit
 
 Init `simple` fit (meaning the model from [McDougal and Gamlin (2010)](https://doi.org/10.1016/j.visres.2009.10.012) for the spectral sensitivity (with no spectral opponency):
 
