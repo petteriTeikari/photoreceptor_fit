@@ -27,8 +27,9 @@ function TRY_melatonin_models()
 %% Normalize the data going through all the time points
 
     % Parameters
-    normalize_method = {'raw'};    
-    model_strings = {'opponent_(M+L)-S'};
+    normalize_method = {'nonneg_maxnorm'}; % raw
+    model_strings = {'simple'; 'opponent_(L-M)'; 'opponent_(M+L)-S'; 'opponent_(+L-M)-S'}; % {'opponent_(+L-M)-S'};
+    % 
     error_for_fit_string = 'variance_relative'; % 'variance_relative'; % ; % 'variance_relative';
     fit_domain = 'lin';    
     

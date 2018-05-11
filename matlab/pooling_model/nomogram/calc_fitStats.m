@@ -1,6 +1,5 @@
 function out = calc_fitStats(exp, y, weights_for_fit, K, mode)  
 
-    weights_for_fit
     % convert to weights the error
            
     % y        - fit
@@ -22,7 +21,14 @@ function out = calc_fitStats(exp, y, weights_for_fit, K, mode)
     S_diff_resid = y - exp;
     
     % weight the residuals
-    S_diff_w = S_diff_resid .* weights_for_fit;
+    
+    % for some reason, for the final stats, the weights become a scalar 0
+    if length(weights_for_fit) == 1
+        % no weighing
+        S_diff_w = S_diff_resid;
+    else
+        S_diff_w = S_diff_resid .* weights_for_fit;
+    end
     
     % the scalar to optimize
     SS_err = real(S_diff_w)' * real(S_diff_w);
@@ -67,9 +73,7 @@ function out = calc_fitStats(exp, y, weights_for_fit, K, mode)
         
         [y exp S_diff_resid]
         weights_for_fit
-        S_diff_w
-        
-        aaa
+        S_diff_w        
         
         out.R2 = R2 + 1;
         out.AIC = AIC;        
@@ -80,4 +84,6 @@ function out = calc_fitStats(exp, y, weights_for_fit, K, mode)
         out.SS_err = SS_err;
         out.SS_reg = SS_reg;    
         out.rCorr = rCorr;
+        out.N = N;
+        out.K = K;
     end

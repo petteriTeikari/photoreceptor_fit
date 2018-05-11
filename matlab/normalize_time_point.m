@@ -10,8 +10,6 @@ function [tp_out, stats] = normalize_time_point(mat_per_tp, ...
                         'Position', [0.05*scrsz(3) 0.48*scrsz(4) 0.90*scrsz(3) 0.4*scrsz(4)]);
     end
     
-    
-
     % Easier variable names
     x = mat_per_tp.lambda;
     y = mat_per_tp.melatonin;
@@ -38,6 +36,13 @@ function [tp_out, stats] = normalize_time_point(mat_per_tp, ...
     if strcmp(normalize_method, 'raw')
         normStr = 'No normalization';
     
+    elseif strcmp(normalize_method, 'nonneg')
+        normStr = 'Non-negative';
+        min_y_per_subject = nanmin(y);
+        min_y_per_column = repmat(min_y_per_subject, no_of_timepoints, 1);
+        y = y - min_y_per_column;
+        
+        
     elseif strcmp(normalize_method, 'z')
         normStr = 'Z-normalized';
         y = (y - mean_rep_timepoint) ./ stdev_rep_timepoint;
@@ -62,6 +67,7 @@ function [tp_out, stats] = normalize_time_point(mat_per_tp, ...
     
     % Compute the stats (per time point)
     if read_experim_stats_from_disk == 1
+        
         if strcmp(group, 'OLD')
             filename_mean = fullfile(path_Data, 'old_mean.csv');
             filename_SD = fullfile(path_Data, 'old_SD.csv'); 
@@ -69,10 +75,11 @@ function [tp_out, stats] = normalize_time_point(mat_per_tp, ...
             filename_mean = fullfile(path_Data, 'young_mean.csv'); 
             filename_SD = fullfile(path_Data, 'young_SD.csv'); 
         end
+                
+        [mean_in,~,~] = importdata(filename_mean,',',1) 
+        [SD_in,~,~] = importdata(filename_SD,',',1)
         
-        [mean_in,~,~] = importdata(filename_mean,',',1);
         mean_per_tp = mean_in.data(:,1+tp_index); % 1 from lambda in data
-        [SD_in,~,~] = importdata(filename_SD,',',1);
         stdev_per_tp = SD_in.data(:,1+tp_index);
         
     else
@@ -88,6 +95,19 @@ function [tp_out, stats] = normalize_time_point(mat_per_tp, ...
     stats.stdev_relative = abs(stdev_per_tp ./ mean_per_tp);
     stats.variance = stdev_per_tp .^ 2;
     stats.variance_relative = abs(stats.variance ./ mean_per_tp);
+    
+    if strcmp(normalize_method, 'nonneg_maxnorm')
+        normStr = 'Non-negative_normToUnity';
+        
+        min_v = nanmin(mean_per_tp);
+        mean_per_tp = mean_per_tp - min_v;
+        max_v = nanmax(mean_per_tp);
+        mean_per_tp = mean_per_tp / max_v;
+        
+        
+
+    end 
+    
     stats.no_weighing = ones(length(stats.variance_relative), 1);       
     
     if strcmp(fit_domain, 'log')
@@ -147,7 +167,12 @@ function [tp_out, stats] = normalize_time_point(mat_per_tp, ...
     
     % OUTPUT AS WELL
     stats.y = mean_per_tp;    
-    stats.stdev = stdev_per_tp;
+    
+    % recompute the stdev assuming that the stdev_relative should stay
+    % the same after the min subtraction and max scaling
+    stats.stdev = stats.stdev_relative .* mean_per_tp;
+    stats.variance = stats.stdev .^ 2;
+    % pause
     
     
     % PLOT AVERAGED TRACE

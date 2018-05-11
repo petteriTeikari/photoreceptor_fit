@@ -14,16 +14,18 @@ function visualize_pooling_models(OLD_FIT, YOUNG_FIT, OLD_stats, YOUNG_stats, ..
                                      tp_ind, norm_ind, model_ind, ...
                                      timepoints_strings, scrsz, plotStyle)
     %}
+   
+    filename_core = ['melfit___', model_string, '___'];
                
     % YOUNG
     group_plot(YOUNG_FIT, YOUNG_stats, 'YOUNG',...
-                 model_string, normalize_method, ...
+                 model_string, normalize_method, filename_core, ...
                  tp_ind, norm_ind, model_ind, error_for_fit_string, ...
                  timepoints_strings, scrsz, plotStyle)
              
     % OLD
     group_plot(OLD_FIT, OLD_stats, 'OLD',...
-                 model_string, normalize_method, ...
+                 model_string, normalize_method, filename_core, ...
                  tp_ind, norm_ind, model_ind, error_for_fit_string, ...
                  timepoints_strings, scrsz, plotStyle)
              
@@ -75,47 +77,54 @@ function init_plot(OLD_FIT, YOUNG_FIT, OLD_stats, YOUNG_stats, ...
     set(sp, 'XLim', plotStyle.xLims)
 
 function group_plot(FIT, STATS, group, ...
-                 model_string, normalize_method, ...
+                 model_string, normalize_method, filename_core, ...
                  tp_ind, norm_ind, model_ind, error_for_fit_string, ...
                  timepoints_strings, scrsz, plotStyle)
 
     % Subplot layout 
     fig = figure('Color', 'w',... 
-                 'Position', [0.05*scrsz(3) 0.725*scrsz(4) 0.92*scrsz(3) 0.25*scrsz(4)]);
+                 'Position', [0.05*scrsz(3) 0.0725*scrsz(4) 0.92*scrsz(3) 0.85*scrsz(4)]);
         
     no_of_timepoints = length(timepoints_strings);
-    rows = 6; % young, old
+    rows = 4; % young, old
     cols = no_of_timepoints; 
     
     for tp = 1 : no_of_timepoints
+        
+        filename_tp = [filename_core, group, '___',  timepoints_strings{tp}];
     
         sp(1,tp) = subplot(rows, cols, tp);
-            weights_plot(STATS{tp}{norm_ind}, error_for_fit_string, ...
+            weights_plot(STATS{tp}{norm_ind}, error_for_fit_string, filename_tp, ...
                               normalize_method, model_string, group, ...
                               tp, timepoints_strings{tp})
         
         sp(2,tp) = subplot(rows, cols, [tp+(1*cols) tp+(2*cols)]);
-            plot_each_subplot(FIT{tp}{norm_ind}{model_ind}, STATS{tp}{norm_ind}, ...
+            plot_each_subplot(FIT{tp}{norm_ind}{model_ind}, STATS{tp}{norm_ind}, filename_tp, ...
                               normalize_method, model_string, group, ...
                               tp, timepoints_strings{tp})
 
         sp(3,tp) = subplot(rows, cols, tp+(3*cols));
-            residual_plot(FIT{tp}{norm_ind}{model_ind}, STATS{tp}{norm_ind}, ...
+            residual_plot(FIT{tp}{norm_ind}{model_ind}, STATS{tp}{norm_ind}, error_for_fit_string, filename_tp, ...
                               normalize_method, model_string, group, ...
                               tp, timepoints_strings{tp})
                           
-        sp(4,tp) = subplot(rows, cols, [tp+(4*cols) tp+(5*cols)]);
-            spectral_fit(FIT{tp}{norm_ind}{model_ind}, STATS{tp}{norm_ind}, ...
+        % sp(4,tp) = subplot(rows, cols, [tp+(4*cols) tp+(5*cols)]);
+        %{
+            spectral_fit(FIT{tp}{norm_ind}{model_ind}, STATS{tp}{norm_ind}, filename_tp,  ...
                               normalize_method, model_string, group, ...
                               tp, timepoints_strings{tp})        
+        %}
     end
     
     set(sp, 'XLim', plotStyle.xLims)
 
+    % Export matlab plot 
+    filename_out = [filename_core, '_', group, '.png'];
+    % saveas(gcf, filename_out)
     
 %% "2nd LEVEL"
 %% i.e. that the 1st level ones call, "private functions" for these
-function spectral_fit(fit_per_tp, stat_per_tp, ...
+function spectral_fit(fit_per_tp, stat_per_tp, filename_tp, ...
                           normalize_method, model_string, group, ...
                           tp, tp_string, plotStyle)   
       
@@ -232,14 +241,50 @@ function spectra_out = populate_spectra(names, x, actSpectra, ...
     end
           
     
-function residual_plot(fit_per_tp, stat_per_tp, ...
+function residual_plot(fit_per_tp, stat_per_tp, error_for_fit_string, filename_tp, ...
                               normalize_method, model_string, group, ...
                               tp, tp_string, plotStyle)    
       
       residual = abs(fit_per_tp.points - stat_per_tp.y);      
       s = stem(stat_per_tp.x, residual, 'k', 'filled');
       
-      fit_per_tp.fit_stats
+      % output path
+      fileName = mfilename; 
+      fullPath = mfilename('fullpath');
+      path_Code = strrep(fullPath, fileName, '');
+      path_Data = fullfile(path_Code, '..', 'data_out_from_matlab');     
+      
+         
+      % write to disk
+      % https://www.mathworks.com/matlabcentral/answers/246922-how-to-add-headers-to-a-data-matrix
+      weights = 1 ./ stat_per_tp.(error_for_fit_string);
+      weights_norm = weights ./ max(weights);
+      
+      % the fit as points
+      filename_out = [filename_tp, '___', 'fit_points.csv'];      
+      full_path = fullfile(path_Data, filename_out);
+      
+      header = {'Wavelength', 'Melatonin CA%', 'Standard Deviation', 'Fit', 'Residual', 'Residual ABS' 'Variance in', 'Weights normalized'};      
+      mat_out = [stat_per_tp.x stat_per_tp.y stat_per_tp.stdev fit_per_tp.points (fit_per_tp.points - stat_per_tp.y) residual stat_per_tp.(error_for_fit_string) weights_norm];      
+      output = [header; num2cell(mat_out)];
+      output_table = cell2table(output);      
+      writetable(output_table, full_path, 'WriteVariableNames', false)
+      
+      
+      % stats
+      filename_out = [filename_tp, '___', 'fit_stats.csv'];      
+      full_path = fullfile(path_Data, filename_out); 
+      struct2csv(fit_per_tp.fit_stats, full_path)
+
+      
+      % photoreceptor contributions (optimizations coefficients for fmincon)
+      filename_out = [filename_tp, '___', 'fit_contributions.csv'];      
+      full_path = fullfile(path_Data, filename_out); 
+      header = fit_per_tp.x0_names';
+      mat_out = fit_per_tp.final_x';
+      output = [header; num2cell(mat_out)];
+      output_table = cell2table(output);
+      writetable(output_table, full_path, 'WriteVariableNames', false)
       
       % set(s, 'XLim', plotStyle.xLims)
       if tp == 1
@@ -255,7 +300,7 @@ function residual_plot(fit_per_tp, stat_per_tp, ...
                      'FontName','Futura Book');
     end
     
-function weights_plot(stat_per_tp, error_for_fit_string, ...
+function weights_plot(stat_per_tp, error_for_fit_string, filename_tp, ...
                               normalize_method, model_string, group, ...
                               tp, tp_string)
            
@@ -280,7 +325,7 @@ function weights_plot(stat_per_tp, error_for_fit_string, ...
     
     
       
-function plot_each_subplot(fit, stats, ...
+function plot_each_subplot(fit, stats, filename_tp, ...
                               normalize_method, model_string, group, ...
                               tp, tp_string)
     
@@ -330,3 +375,22 @@ function plot_each_subplot(fit, stats, ...
         % set(leg, 'FontSize', style.fontBaseSize-1, 'FontName', style.fontName)
 
     drawnow
+    
+    filename_out = [filename_tp, '___', 'fit_spectrum.csv'];
+      
+    fileName = mfilename; 
+    fullPath = mfilename('fullpath');
+    path_Code = strrep(fullPath, fileName, '');
+    path_Data = fullfile(path_Code, '..', 'data_out_from_matlab');      
+    full_path = fullfile(path_Data, filename_out);
+      
+    % https://www.mathworks.com/matlabcentral/answers/246922-how-to-add-headers-to-a-data-matrix
+    header = {'Wavelength', 'Spectrum Fit'};      
+    mat_out = [lambda, spectrumFit];      
+    output = [header; num2cell(mat_out)];
+    output_table = cell2table(output);
+      
+    writetable(output_table, full_path, 'WriteVariableNames', false)
+          
+    
+    

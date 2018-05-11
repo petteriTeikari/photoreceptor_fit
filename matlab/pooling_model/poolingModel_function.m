@@ -125,8 +125,12 @@ function yOut = poolingModel_function(x, lambda, y, weights_for_fit, mode, statP
         % fit is quantified finally with this single scalar cost function
         % which is minimized here        
         
+        % [max(y(:)) max(Sfit(:))]
+        
+        
         if strcmp(output, 'optim') == 1            
             yOut = calc_fitStats(y, Sfit, weights_for_fit, statParam.K, output);            
         else
+            Sfit = Sfit / max(Sfit(:));
             yOut = Sfit;
         end
