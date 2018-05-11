@@ -7,6 +7,8 @@ As R produces prettier graphs, it is nicer to use and is totally free so made it
 ![YOUNG](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/figures_out/R_young_visualization.png "YOUNG")
 ![OLD](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/figures_out/R_old_visualization.png "OLD")
 
+_also RMSE (root-mean-square error), log likelyhood (ll), and Bayesian Information Criterion (BIC) are calculated as quantitative metrics of the fit_ (see function `recompute.fit.stats = function(stat_in, n, K, y_in, y_fit, error, w)` in [plot_subfunctions.R](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/R_code/plot_subfunctions.R)
+
 ## The time-course of photoreceptor contributions
 
 Computed, but need to be plotted
