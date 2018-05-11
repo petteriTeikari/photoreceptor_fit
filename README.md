@@ -1,6 +1,6 @@
 # R: Visualize the results from Matlab
 
-As R produces prettier graphs, it is nicer to use and is totally free so made it a more user-friendly script there
+As R produces prettier graphs, it is nicer to use and is totally free so made it a more user-friendly script there. See the code in folder called **[R_code](https://github.com/petteriTeikari/photoreceptor_fit/tree/master/R_code)**
 
 ## The model fitting
 
