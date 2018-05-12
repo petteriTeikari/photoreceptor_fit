@@ -11,7 +11,17 @@ _also RMSE (root-mean-square error), log likelyhood (ll), and Bayesian Informati
 
 ## The time-course of photoreceptor contributions
 
-Computed, but need to be plotted
+![YOUNG](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/figures_out/R_messy_evolution.png "YOUNG")
+
+_The messy plotting everything version_
+
+![YOUNG](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/figures_out/R_cleaner_evolution.png "YOUNG")
+
+_Clearer plot with only model. The younger data is not really represented well with the model? Some sort of trends can be seen in the OLD data in accordance with the **story** that the photoreceptor contributions **change** and are not constant and how melatonin suppression spectral sensitivity cannot be really expressed by a single action spectrum (analogous to nonlinear mesopic sensitivity)_
+
+**TODO!** for the paper, you could pick couple of those parameters and compare those to the **R^2"" of the melanopic model** by Lucas _et al._ and some parameter from Simon? 
+
+**Scroll-down** for how the McDougal and Gamlin (2010) plotted the evolution.
 
 ## To Use
 
