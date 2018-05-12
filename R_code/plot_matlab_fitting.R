@@ -1,4 +1,4 @@
-# INIT ----------------------------------------------------------------
+ # INIT ----------------------------------------------------------------
 
   # Libraries
   library(ggplot2)
@@ -12,8 +12,13 @@
   data_path_study = file.path(script.dir, '..', 'data', fsep = .Platform$file.sep)
   
   # Source subfunction(s)
+  
+  # The "boring" data wrangling here
   source(file.path(script.dir, 'plot_subfunctions.R', fsep = .Platform$file.sep))
+  
+  # The fun stuff on these
   source(file.path(script.dir, 'plot_model_fit_per_timepoint.R', fsep = .Platform$file.sep))
+  source(file.path(script.dir, 'plot_parameter_evolution.R', fsep = .Platform$file.sep))
 
     
 # GET FILE LISTINGS ----------------------------------------------------------------
@@ -48,8 +53,16 @@
     
 # PLOT ----------------------------------------------------------------    
   
-  plot.wrapper(fit, point, stat, contrib, orig_list)
+  param = list()
+  param[['what_to_plot']] = 'matlab'
     
+  out_list = plot.wrapper(fit, point, stat, contrib, orig_list, param)
+    p_out = out_list[[1]]
+    df_out = out_list[[2]]
+    param_out = out_list[[3]]
   
+  param[['groups']] = c('OLD', 'YOUNG')
+  
+  plot.time.evolution(contrib, param_out, param)
   
   

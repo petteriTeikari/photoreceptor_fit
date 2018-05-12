@@ -184,16 +184,18 @@ concontribution.wrapper = function(contribs, contrib, model_name) {
   return(contrib)
 }
 
-plot.wrapper = function(fit, point, stat, contrib, orig_list) {
-  
-  
+plot.wrapper = function(fit, point, stat, contrib, orig_list, param) {
   
   # plot the model fits
-  plot.the.model.fits(fit$wavelength, fit, point, point$wavelength, stat, orig_list)
+  out_list = plot.the.model.fits(fit$wavelength, fit, point, point$wavelength, stat, 
+                                 orig_list, param)
+  
+  return(out_list)
   
 }
 
-plot.the.model.fits = function(fit_wavelength, fit, point, point_wavelength, stat, orig_list) {
+plot.the.model.fits = function(fit_wavelength, fit, point, point_wavelength, stat, 
+                               orig_list, param) {
   
   # get the variables in the list
   groups = names(point)
@@ -201,31 +203,53 @@ plot.the.model.fits = function(fit_wavelength, fit, point, point_wavelength, sta
   timepoints = names(point[[groups[1]]])
   models = names(point[[groups[1]]][[timepoints[1]]])
   
-  for (i in 1:1) { #length(groups)) { # YOUNG, OLD
+  p = list()
+  dfs_g = list()
+  df_out_param_g = list()
+  
+  for (i in 1:length(groups)) { # YOUNG, OLD
     
-    plot.model.fit.per.group(groups[i], 
+    group_out = plot.model.fit.per.group(groups[i], 
                              fit_wavelength, fit[[groups[i]]], 
                              point_wavelength, point[[groups[i]]],
-                             stat[[groups[i]]], orig_list)
+                             stat[[groups[i]]], orig_list, param)
+    
+    p[[groups[i]]] = group_out[[1]]
+    dfs_g[[groups[i]]] = group_out[[2]]
+    df_out_param_g[[groups[i]]] = group_out[[3]]
+    
   }
+  
+  return(list(p, dfs_g, df_out_param_g))
+  
 }
 
 plot.model.fit.per.group = function(group, fit_wavelength, fit_g, 
-                                    point_wavelength, point_g, stat_g, orig_list) {
+                                    point_wavelength, point_g, stat_g, orig_list, param) {
   
   no_of_cols = length(fit_g)
   timepoints = names(fit_g)
   p = list()
+  dfs_tp = list()
+  df_out_param_tp = list()
   
   for (i in 1:length(fit_g)) {
     
-    p[[i]] = plot.model.fit.per.timepoint(group, timepoints[i], 
+    tp_out = plot.model.fit.per.timepoint(group, timepoints[i], 
                                  fit_wavelength, fit_g[[i]], 
-                                 point_g[[i]], point_wavelength, stat_g[[i]], orig_list)
+                                 point_g[[i]], point_wavelength, stat_g[[i]], 
+                                 orig_list, param)
+    
+    p[[i]] = tp_out[[1]]
+    dfs_tp[[timepoints[i]]] = tp_out[[2]]
+    df_out_param_tp[[timepoints[i]]] = tp_out[[3]]
+    
   }
   
   # 4 columns here, 1 row, arrange
   do.call(grid.arrange, c(p, list(ncol=length(fit_g)/2)))
+  
+  return(list(p, dfs_tp, df_out_param_tp))
   
 }
 
@@ -301,3 +325,172 @@ import.orig.points = function(data_path_study) {
   return(list(orig_mean, orig_SD, orig_all))
   
 }
+
+plot.time.evolution = function(contrib, param_out, param) {
+  
+  # First reshape the list so that the time point matrices are at the end of the list
+  reshaped = reshape.contrib.list(contrib)
+    contrib_reshaped = reshaped[[1]]
+    timepoint_names = reshaped[[2]]
+  
+  # What to keep for plot (or further stat analysis)
+  param[['evolution_models']] = c("opponent_(+L-M)-S", "opponent_(L-M)", "opponent_(M+L)-S", "simple")
+  param[['parameters_to_plot']] = c('melanopsin', 'rods', 'SWS', 'MWS', 'Cones', 'MWSplusLWS', 'LWS', 'opponentWeight')
+
+  # Trim away the variables not found from the above defined lists
+  param[['what_to_output']] = 'list'
+  contrib_trim = trim.list.to.desired.variables(contrib_reshaped, timepoint_names, param[['what_to_output']])  
+  
+  param[['what_to_output']] = 'df'
+  contrib_df = trim.list.to.desired.variables(contrib_reshaped, timepoint_names, param[['what_to_output']])  
+  
+  # Actually then plot
+  plot.parameter.evolution(contrib_df, param, param_out)
+  
+}
+
+trim.list.to.desired.variables = function(contrib, timepoint_names, what_to_output) {
+  
+  groups = names(contrib)  
+  list_out = list()
+  vectors_out = list() # long data_frame
+  
+  for (g in 1:length(groups)) {
+    
+    group_name = groups[g]
+    models = names(contrib[[group_name]])
+    
+    # get rid of unwanted model names
+    to_incl = param[['evolution_models']]
+    indices = models %in% to_incl
+    models = models[indices]
+      # TODO! now if you wanted something that is not in models, you do not notice it
+      # i.e. check for typos, etc.
+    
+    for (m in 1:length(models)) {
+        
+      model = models[[m]]  
+      parameters = names(contrib[[group_name]][[model]])
+      
+      # get rid of unwanted parameter names
+      to_incl = param[['parameters_to_plot']]
+      indices = parameters %in% to_incl
+      parameters = parameters[indices]
+        # TODO! now if you wanted something that is not in parameters, you do not notice it
+        # i.e. check for typos, etc.
+    
+      for (p in 1:length(parameters)) {
+        
+        parameter = parameters[[p]]
+        parameter_evolution = contrib[[group_name]][[model]][[parameter]]
+        
+        # How many combinations, for the long version
+        combinations = length(groups)*
+                       length(models)*
+                       length(parameters)*
+                       length(parameter_evolution)
+        
+        # return just the trimmed list
+        list_out[[group_name]][[model]][[parameter]] = contrib[[group_name]][[model]][[parameter]] 
+        
+        # TODO! If you want to manipulate the data in some other way
+        #INJECTIONPOINT
+        if (identical(what_to_output, 'df')) {
+          
+          # output as a long-format data frame
+          
+          # So now we have multiple factors
+          # GROUP (young vs. old)
+          # MODEL (which opponency, etc.)
+          # PARAMETERS (melanopsin, cone, rod contribution etc.)
+          # TIMEPOINTS (15, 30, 45, 60)
+          
+          # i.e. the number of time points, and then we have to replicate
+          # the other variables to this length
+          no_of_entries = length(contrib[[group_name]][[model]][[parameter]])
+          
+          value_vector = contrib[[group_name]][[model]][[parameter]]
+          
+          timepoint_name_vector = timepoint_names
+          group_vector = rep(group_name, no_of_entries)
+          model_vector = rep(model, no_of_entries)
+          parameter_vector = rep(parameter, no_of_entries)
+          
+          # And make a long format, so we have "combinations" length vector
+          if (g == 1 & m == 1 & p == 1) {
+            
+            # Init first the vector (on first iteration)
+            vectors_out[['value']] = value_vector
+            vectors_out[['timepoint_names']] = timepoint_name_vector
+            vectors_out[['group']] = group_vector
+            vectors_out[['model']] = model_vector
+            vectors_out[['parameter']] = parameter_vector
+          
+          } else {
+            
+            # append on further iterations
+            vectors_out[['value']] = c(vectors_out[['value']], value_vector)
+            vectors_out[['timepoint_names']] = c(vectors_out[['timepoint_names']], timepoint_name_vector)
+            vectors_out[['group']] = c(vectors_out[['group']], group_vector)
+            vectors_out[['model']] = c(vectors_out[['model']], model_vector)
+            vectors_out[['parameter']] = c(vectors_out[['parameter']], parameter_vector)
+          
+          }
+        }
+      }
+    }
+  }
+  
+  if (identical(what_to_output, 'df')) {
+    # output as a long-format data frame
+    df = data.frame(vectors_out)
+    return(df)
+    
+  } else if (identical(what_to_output, 'list')) {
+    return(list_out)  
+  }
+}
+
+reshape.contrib.list = function(contrib) {
+ 
+  list_out = list()
+  
+  groups = param[['groups']]
+  for (g in 1:length(groups)) {
+    
+    group_name = groups[g]
+    timepoints = names(contrib[[group_name]])
+    
+    for (tp in 1:length(timepoints)) {
+    
+        timepoint = timepoints[[tp]]
+        models = names(contrib[[group_name]][[timepoint]])
+        
+        for (m in 1:length(models)) {
+          
+          model = models[[m]]  
+          parameters_per_model = contrib[[group_name]][[timepoint]][[model]]
+            
+          for (p in 1:length(parameters_per_model)) {
+            
+            parameter_name = names(parameters_per_model)[[p]]
+            parameter_value = contrib[[group_name]][[timepoint]][[model]][[parameter_name]]
+            
+            if (tp == 1) {
+              mat = as.numeric(matrix(ncol=length(timepoints)))
+              list_out[[group_name]][[model]][[parameter_name]] = mat
+              list_out[[group_name]][[model]][[parameter_name]][tp] = parameter_value
+            } else {
+              list_out[[group_name]][[model]][[parameter_name]][tp] = parameter_value 
+            }
+            
+          }
+        }
+    }
+  }
+  
+  return(list(list_out, timepoints))
+  
+}
+ 
+ 

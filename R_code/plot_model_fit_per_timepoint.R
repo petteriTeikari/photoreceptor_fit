@@ -1,6 +1,7 @@
 plot.model.fit.per.timepoint = function(group_name, timepoint, 
                                         fit_wavelength, fit_tp, 
-                                        point_tp, point_wavelength, stat_tp, orig_list) {
+                                        point_tp, point_wavelength, stat_tp, 
+                                        orig_list, param) {
   
   model_names = names(fit_tp)
   
@@ -65,13 +66,16 @@ plot.model.fit.per.timepoint = function(group_name, timepoint,
   
   p = p + theme(legend.text = element_text(size = 8))
   
-  
     # Colorblind-friendly palette
     # http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/#a-colorblind-friendly-palette
   
   # Final print (i.e. display of figure)
   print(p)  
   
-  return(p)
+  # put something here if you wanna push it all the way out to the calling main function
+  df_out_param = list()
+  df_out_param[['placeholder']] = NA
+  
+  return(list(p, dfs, df_out_param))
   
 }
