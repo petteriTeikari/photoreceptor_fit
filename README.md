@@ -98,7 +98,7 @@ Now with spectral opponency, we can start seeing these notches as shown by [Rea 
 
 #### Fitting the 65yrs old data (trying at LRC)
 
-Data from [Thapan et al. 2001](), [Brainard et al. 2001](); and models from [Rea et al. (2005)[https://doi.org/10.1016/j.brainresrev.2005.07.002], [Takahashi et al. 2011](https://doi.org/10.2150/jlve.35.123), [Gall 2004](https://core.ac.uk/download/pdf/33447243.pdf) / [DIN Standard, Lang 2011](http://dx.doi.org/10.1117/2.1201101.003442), and Melanopic function from [Enezi et al. 2011](https://doi.org/10.1177/0748730411409719)
+Data from [Thapan et al. 2001](), [Brainard et al. 2001](); and models from [Rea et al. (2005)](https://doi.org/10.1016/j.brainresrev.2005.07.002), [Takahashi et al. 2011](https://doi.org/10.2150/jlve.35.123), [Gall 2004](https://core.ac.uk/download/pdf/33447243.pdf) / [DIN Standard, Lang 2011](http://dx.doi.org/10.1117/2.1201101.003442), and Melanopic function from [Enezi et al. 2011](https://doi.org/10.1177/0748730411409719)
 
 Fitting when normalized to unity in linear domain
 
