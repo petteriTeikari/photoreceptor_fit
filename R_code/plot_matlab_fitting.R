@@ -1,15 +1,23 @@
- # INIT ----------------------------------------------------------------
+# INIT ----------------------------------------------------------------
 
   # Libraries
   library(ggplot2)
   library(grid)
   library(gridExtra)
   library(reshape2)
+  library(zoo) # for interpolating the NAs away
+
 
   # Define Paths
   script.dir <- dirname(sys.frame(1)$ofile)
   data_path = file.path(script.dir, '..', 'data_out_from_matlab', fsep = .Platform$file.sep)
   data_path_study = file.path(script.dir, '..', 'data', fsep = .Platform$file.sep)
+  
+  # Init param
+  param = list()
+  param[['code_path']] = script.dir
+  param[['data_path']] = data_path
+  param[['data_path_study']] = data_path_study
   
   # Source subfunction(s)
   
@@ -19,6 +27,7 @@
   # The fun stuff on these
   source(file.path(script.dir, 'plot_model_fit_per_timepoint.R', fsep = .Platform$file.sep))
   source(file.path(script.dir, 'plot_parameter_evolution.R', fsep = .Platform$file.sep))
+  source(file.path(script.dir, 'model_fit_wrapper.R', fsep = .Platform$file.sep))
 
     
 # GET FILE LISTINGS ----------------------------------------------------------------
@@ -53,16 +62,32 @@
     
 # PLOT ----------------------------------------------------------------    
   
-  param = list()
-  param[['what_to_plot']] = 'matlab'
+  ## Full spectrum fits
     
-  out_list = plot.wrapper(fit, point, stat, contrib, orig_list, param)
-    p_out = out_list[[1]]
-    df_out = out_list[[2]]
-    param_out = out_list[[3]]
-  
-  param[['groups']] = c('OLD', 'YOUNG')
-  
-  plot.time.evolution(contrib, param_out, param)
+    # Parameters 
+    param[['what_to_plot']] = 'matlab'
+    param[['models_to_use_for_aux_fit']] = c('melanopic')
+    
+    # Actual function for plotting  
+    out_list = plot.wrapper(fit, point, stat, contrib, orig_list, param)
+      p_out = out_list[[1]]
+      df_out = out_list[[2]]
+      param_out = out_list[[3]]
+    
+  ## Evolution of contributions
+    
+    # What to keep for plot (or further stat analysis)  
+    param[['groups']] = c('OLD', 'YOUNG')
+    
+    param[['aux_model_to_track']] = 'melanopic'
+    param[['aux_metrics']] = c('R2weighed')
+    
+    param[['evolution_models']] = c("opponent_(+L-M)-S", "opponent_(L-M)", "opponent_(M+L)-S", "simple")
+    param[['parameters_to_plot']] = c('melanopsin', 'rods', 'SWS', 'MWS', 'Cones', 'MWSplusLWS', 'LWS', 'opponentWeight')
+    param[['parameters_to_plot']] = c('melanopsin', 'opponentWeight')
+    
+    # Function call
+    source(file.path(script.dir, 'plot_subfunctions.R', fsep = .Platform$file.sep))
+    plot.time.evolution(contrib, param_out, param)
   
   

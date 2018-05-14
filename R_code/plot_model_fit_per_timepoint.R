@@ -22,6 +22,10 @@ plot.model.fit.per.timepoint = function(group_name, timepoint,
   fits_to_plot = dfs[[1]]
   points_in = dfs[[2]]
   points_of_fit = dfs[[3]]
+  
+  #INJECTIONPOINT
+  # Fit other models for the points of this timepoint
+  aux_fits = fit.aux.models(orig_list, point_wavelength, point_tp, param)
     
   
   # Melt the data frame to long format
@@ -29,6 +33,8 @@ plot.model.fit.per.timepoint = function(group_name, timepoint,
   fits_df_melt = melt(fits_to_plot, id='x')
   points_df_melt = melt(points_in, id='x')
   error = points_in
+  
+  # str(stat_tp[[model_names[i]]])
   
   # Rename the legends
   legend = list()
@@ -75,6 +81,7 @@ plot.model.fit.per.timepoint = function(group_name, timepoint,
   # put something here if you wanna push it all the way out to the calling main function
   df_out_param = list()
   df_out_param[['placeholder']] = NA
+  df_out_param[['aux_fits']] = aux_fits
   
   return(list(p, dfs, df_out_param))
   

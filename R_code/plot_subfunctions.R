@@ -76,12 +76,28 @@ import.matlab.results = function(files_points, files_spectra, files_stats, files
 recompute.fit.stats = function(stat_in, n, K, y_in, y_fit, error, w) {
   
   res = abs(y_in - y_fit)
+  res_weighed = res * w
+  
+  # Rsquare in general
+  # https://en.wikipedia.org/wiki/Coefficient_of_determination
   
   # Rsquare in R
   # https://stats.stackexchange.com/questions/230556/calculate-r-square-in-r-for-two-vectors
-  R2 = 1 - (sum((y_in-y_fit)^2)/sum((y_in-mean(y_in))^2))
+  SS_residual = sum((res)^2)
+  SS_total = sum((y_in-mean(y_in))^2)
+  R2 = 1 - (SS_residual/SS_total)
+  
+  # weighed Rsquare (weigh the residuals)
+  SS_residual_weighed = sum((res_weighed)^2)
+  R2weighed = 1 - (SS_residual_weighed/SS_total)
+  
   RMSE = sqrt(mean((y_fit-y_in)^2))
+  
+  stat_in$SS_residual_weighed = SS_residual_weighed
+  stat_in$SS_residual = SS_residual
+  stat_in$SS_total = SS_total
   stat_in$R2 = R2
+  stat_in$R2weighed = R2weighed
   stat_in$RMSE = RMSE
   
   # We need to compute the BIC, AIC "by hand" as R has many functions if we would
@@ -332,45 +348,57 @@ plot.time.evolution = function(contrib, param_out, param) {
   reshaped = reshape.contrib.list(contrib)
     contrib_reshaped = reshaped[[1]]
     timepoint_names = reshaped[[2]]
-  
-  # What to keep for plot (or further stat analysis)
-  param[['evolution_models']] = c("opponent_(+L-M)-S", "opponent_(L-M)", "opponent_(M+L)-S", "simple")
-  param[['parameters_to_plot']] = c('melanopsin', 'rods', 'SWS', 'MWS', 'Cones', 'MWSplusLWS', 'LWS', 'opponentWeight')
 
   # Trim away the variables not found from the above defined lists
   param[['what_to_output']] = 'list'
-  contrib_trim = trim.list.to.desired.variables(contrib_reshaped, timepoint_names, param[['what_to_output']])  
+  contrib_trim = trim.list.to.desired.variables(contrib_reshaped, timepoint_names, param[['what_to_output']],
+                                                param_out, param)  
   
   param[['what_to_output']] = 'df'
-  contrib_df = trim.list.to.desired.variables(contrib_reshaped, timepoint_names, param[['what_to_output']])  
+  contrib_df = trim.list.to.desired.variables(contrib_reshaped, timepoint_names, param[['what_to_output']],
+                                              param_out, param)  
+
+  # Do the same reshaping for the aux variables
+  param[['evolution_models']] = param[['aux_model_to_track']]
+  param[['parameters_to_plot']] = param[['aux_metrics']]
+  aux_reshape_out = reshape.param.out(param_out, param, var_name = 'aux_fits')
+    aux_reshaped = aux_reshape_out[[1]]
+  aux_df = trim.list.to.desired.variables(aux_reshaped, timepoint_names, param[['what_to_output']],
+                                              param_out, param)    
   
   # Actually then plot
-  plot.parameter.evolution(contrib_df, param, param_out)
+  plot.parameter.evolution(contrib_df, aux_df, param, param_out)
   
 }
 
-trim.list.to.desired.variables = function(contrib, timepoint_names, what_to_output) {
+
+trim.list.to.desired.variables = function(list_in, timepoint_names, what_to_output,
+                                          param_out, param) {
   
-  groups = names(contrib)  
+  groups = names(list_in)  
   list_out = list()
   vectors_out = list() # long data_frame
   
   for (g in 1:length(groups)) {
     
     group_name = groups[g]
-    models = names(contrib[[group_name]])
+    models = names(list_in[[group_name]])
     
     # get rid of unwanted model names
     to_incl = param[['evolution_models']]
     indices = models %in% to_incl
     models = models[indices]
+    
       # TODO! now if you wanted something that is not in models, you do not notice it
       # i.e. check for typos, etc.
+      if (length(models) == 0) {
+        warning('No models in the end selected, problem with your inclusion? defined in "param$evolution_models"')
+      }
     
     for (m in 1:length(models)) {
         
       model = models[[m]]  
-      parameters = names(contrib[[group_name]][[model]])
+      parameters = names(list_in[[group_name]][[model]])
       
       # get rid of unwanted parameter names
       to_incl = param[['parameters_to_plot']]
@@ -378,11 +406,19 @@ trim.list.to.desired.variables = function(contrib, timepoint_names, what_to_outp
       parameters = parameters[indices]
         # TODO! now if you wanted something that is not in parameters, you do not notice it
         # i.e. check for typos, etc.
+        if (length(parameters) == 0) {
+          warning('No parameters in the end selected, problem with your inclusion? defined in "param$parameters_to_plot"')
+        }
+      
+        # TODO! We are not looping through the parameters from aux_fits now, so if you would like 
+        # to see evaluation of Rsquare, RMS, AIC, BIC, etc. 
+        # But as init implementation the weighed R^2 seemed good as we used weighed optimization as
+        # well in the Matlab implementation (thus R^2 is considerably worse for that reason than the Rsquared)
     
       for (p in 1:length(parameters)) {
         
         parameter = parameters[[p]]
-        parameter_evolution = contrib[[group_name]][[model]][[parameter]]
+        parameter_evolution = list_in[[group_name]][[model]][[parameter]]
         
         # How many combinations, for the long version
         combinations = length(groups)*
@@ -391,7 +427,7 @@ trim.list.to.desired.variables = function(contrib, timepoint_names, what_to_outp
                        length(parameter_evolution)
         
         # return just the trimmed list
-        list_out[[group_name]][[model]][[parameter]] = contrib[[group_name]][[model]][[parameter]] 
+        list_out[[group_name]][[model]][[parameter]] = list_in[[group_name]][[model]][[parameter]] 
         
         # TODO! If you want to manipulate the data in some other way
         #INJECTIONPOINT
@@ -407,14 +443,21 @@ trim.list.to.desired.variables = function(contrib, timepoint_names, what_to_outp
           
           # i.e. the number of time points, and then we have to replicate
           # the other variables to this length
-          no_of_entries = length(contrib[[group_name]][[model]][[parameter]])
+          no_of_entries = length(list_in[[group_name]][[model]][[parameter]])
           
-          value_vector = contrib[[group_name]][[model]][[parameter]]
+          value_vector = list_in[[group_name]][[model]][[parameter]]
+          
+          aux_vector = aux_fits[[group_name]][[model]][[parameter]]
           
           timepoint_name_vector = timepoint_names
           group_vector = rep(group_name, no_of_entries)
           model_vector = rep(model, no_of_entries)
           parameter_vector = rep(parameter, no_of_entries)
+          
+          # easier to plot geom_line()?
+          # ind = ((g-1)*length(models)) + ((m-1)*length(parameters)) + p 
+          # str(ind)
+          # lineplot_group = rep(ind, no_of_entries)
           
           # And make a long format, so we have "combinations" length vector
           if (g == 1 & m == 1 & p == 1) {
@@ -449,6 +492,53 @@ trim.list.to.desired.variables = function(contrib, timepoint_names, what_to_outp
   } else if (identical(what_to_output, 'list')) {
     return(list_out)  
   }
+}
+
+reshape.param.out = function(param_out, param, var_name) {
+ 
+  list_out = list()
+  groups = param[['groups']]
+  
+  for (g in 1:length(groups)) {
+    
+    group_name = groups[g]
+    timepoints = names(param_out[[group_name]])
+    
+    for (tp in 1:length(timepoints)) {
+      
+      timepoint = timepoints[[tp]]
+      
+      # reshape single variable at time
+      # TODO! add for (var_name in 1 : length(var_names))
+      models = names(param_out[[group_name]][[timepoint]][[var_name]])
+      
+      for (m in 1:length(models)) {
+        
+        model = models[[m]]  
+        
+        # parameters_per_model = param_out[[group_name]][[timepoint]][[var_name]][[model]]
+        parameters_per_model = param[['aux_metrics']]
+        
+        for (p in 1:length(parameters_per_model)) {
+          
+          parameter_name = parameters_per_model[[p]]
+          parameter_value = param_out[[group_name]][[timepoint]][[var_name]][[model]][[parameter_name]]
+          
+          if (tp == 1) {
+            mat = as.numeric(matrix(ncol=length(timepoints)))
+            list_out[[group_name]][[model]][[parameter_name]] = mat
+            list_out[[group_name]][[model]][[parameter_name]][tp] = parameter_value
+          } else {
+            list_out[[group_name]][[model]][[parameter_name]][tp] = parameter_value 
+          }
+          
+        }
+      }
+    }
+  }
+  
+  return(list(list_out, timepoints))
+   
 }
 
 reshape.contrib.list = function(contrib) {
