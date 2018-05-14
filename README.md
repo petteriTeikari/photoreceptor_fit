@@ -19,7 +19,7 @@ _The messy plotting everything version_
 
 _Clearer plot with only model. The younger data is not really represented well with the model? Some sort of trends can be seen in the OLD data in accordance with the **story** that the photoreceptor contributions **change** and are not constant and how melatonin suppression spectral sensitivity cannot be really expressed by a single action spectrum (analogous to nonlinear mesopic sensitivity)_
 
-**TODO!** for the paper, you could pick couple of those parameters and compare those to the **R^2"" of the melanopic model** by Lucas _et al._ and some parameter from Simon? 
+**TODO!** for the paper, you could pick couple of those parameters and compare those to the **R^2** of the **melanopic template** by Lucas _et al._ and some parameter from Simon? 
 
 **Scroll-down** for how the McDougal and Gamlin (2010) plotted the evolution.
 
@@ -98,7 +98,7 @@ Now with spectral opponency, we can start seeing these notches as shown by [Rea 
 
 #### Fitting the 65yrs old data (trying at LRC)
 
-Data from [Thapan et al. 2001](), [Brainard et al. 2001](); and models from [Rea et al. (2005)[https://doi.org/10.1016/j.brainresrev.2005.07.002], [Takahashi et al. 2011](https://doi.org/10.2150/jlve.35.123), [Gall 2004](https://core.ac.uk/download/pdf/33447243.pdf) / [DIN Standard, Lang 2011](http://dx.doi.org/10.1117/2.1201101.003442), and Melanopic function from [Enezi et al. 2011](https://doi.org/10.1177/0748730411409719)
+Data from [Thapan et al. 2001](), [Brainard et al. 2001](); and models from [Rea et al. (2005)](https://doi.org/10.1016/j.brainresrev.2005.07.002), [Takahashi et al. 2011](https://doi.org/10.2150/jlve.35.123), [Gall 2004](https://core.ac.uk/download/pdf/33447243.pdf) / [DIN Standard, Lang 2011](http://dx.doi.org/10.1117/2.1201101.003442), and Melanopic function from [Enezi et al. 2011](https://doi.org/10.1177/0748730411409719)
 
 Fitting when normalized to unity in linear domain
 
