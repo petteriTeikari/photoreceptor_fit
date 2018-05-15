@@ -11,6 +11,7 @@
   # Define Paths
   script.dir <- dirname(sys.frame(1)$ofile)
   data_path = file.path(script.dir, '..', 'data_out_from_matlab', fsep = .Platform$file.sep)
+  data_path_CUSTOM = file.path(data_path, 'custom', fsep = .Platform$file.sep)
   data_path_study = file.path(script.dir, '..', 'data', fsep = .Platform$file.sep)
   
   # Init param
@@ -35,18 +36,22 @@
   # points
   pattern = '*._points.csv'
   files_points = list.files(path=data_path, pattern=pattern, recursive=FALSE, full.names = TRUE)
+  files_points_CUSTOM = list.files(path=data_path_CUSTOM, pattern=pattern, recursive=FALSE, full.names = TRUE)
   
   # spectra
   pattern = '*._spectrum.csv'
   files_spectra = list.files(path=data_path, pattern=pattern, recursive=FALSE, full.names = TRUE)
+  files_spectra_CUSTOM = list.files(path=data_path_CUSTOM, pattern=pattern, recursive=FALSE, full.names = TRUE)
   
   # stats
   pattern = '*._stats.csv'
   files_stats = list.files(path=data_path, pattern=pattern, recursive=FALSE, full.names = TRUE)
+  files_stats_CUSTOM = list.files(path=data_path_CUSTOM, pattern=pattern, recursive=FALSE, full.names = TRUE)
   
   # contributions
   pattern = '*._contributions.csv'
   files_contribs = list.files(path=data_path, pattern=pattern, recursive=FALSE, full.names = TRUE)
+  files_contribs_CUSTOM = list.files(path=data_path_CUSTOM, pattern=pattern, recursive=FALSE, full.names = TRUE)
   
   
 # IMPORT ----------------------------------------------------------------  
@@ -57,6 +62,13 @@
     stat = imported[[3]]
     contrib = imported[[4]]
     
+  imported_CUSTOM = import.matlab.results(files_points_CUSTOM, files_spectra_CUSTOM, 
+                                   files_stats_CUSTOM, files_contribs_CUSTOM)
+    fit_CUSTOM = imported_CUSTOM[[1]]
+    point_CUSTOM = imported_CUSTOM[[2]]
+    stat_CUSTOM = imported_CUSTOM[[3]]
+    contrib_CUSTOM = imported_CUSTOM[[4]]
+    
     # get original points 
     orig_list = import.orig.points(data_path_study)
     
@@ -64,15 +76,31 @@
   
   ## Full spectrum fits
     
-    # Parameters 
-    param[['what_to_plot']] = 'matlab'
-    param[['models_to_use_for_aux_fit']] = c('melanopic')
+    # NAJJAR et al. 
     
-    # Actual function for plotting  
-    out_list = plot.wrapper(fit, point, stat, contrib, orig_list, param)
-      p_out = out_list[[1]]
-      df_out = out_list[[2]]
-      param_out = out_list[[3]]
+      # Parameters 
+      param[['what_to_plot']] = 'matlab'
+      param[['models_to_use_for_aux_fit']] = c('melanopic')
+      
+      # Actual function for plotting  
+      out_list = plot.wrapper(fit, point, stat, contrib, orig_list, param)
+        p_out = out_list[[1]]
+        df_out = out_list[[2]]
+        param_out = out_list[[3]]
+        
+    # CUSTOM DATA
+        
+      # Parameters 
+      param[['what_to_plot']] = 'matlab_CUSTOM'
+      param[['models_to_use_for_aux_fit']] = c('melanopic')
+      
+      # Actual function for plotting  
+      out_list_CUSTOM = plot.wrapper(fit_CUSTOM, point_CUSTOM, stat_CUSTOM, contrib_CUSTOM, 
+                                     orig_list, param)
+        p_out_CUSTOM = out_list_CUSTOM[[1]]
+        df_out_CUSTOM = out_list_CUSTOM[[2]]
+        param_out_CUSTOM = out_list_CUSTOM[[3]]
+      
     
   ## Evolution of contributions
     
@@ -80,14 +108,16 @@
     param[['groups']] = c('OLD', 'YOUNG')
     
     param[['aux_model_to_track']] = 'melanopic'
-    param[['aux_metrics']] = c('R2weighed')
+    param[['aux_metrics']] = c('RMSE')
     
     param[['evolution_models']] = c("opponent_(+L-M)-S", "opponent_(L-M)", "opponent_(M+L)-S", "simple")
     param[['parameters_to_plot']] = c('melanopsin', 'rods', 'SWS', 'MWS', 'Cones', 'MWSplusLWS', 'LWS', 'opponentWeight')
     param[['parameters_to_plot']] = c('melanopsin', 'opponentWeight')
     
     # Function call
-    source(file.path(script.dir, 'plot_subfunctions.R', fsep = .Platform$file.sep))
     plot.time.evolution(contrib, param_out, param)
+    
+    param[['groups']] = c('CUSTOM')
+    plot.time.evolution(contrib_CUSTOM, param_out_CUSTOM, param)
   
   

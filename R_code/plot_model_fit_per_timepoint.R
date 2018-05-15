@@ -25,7 +25,7 @@ plot.model.fit.per.timepoint = function(group_name, timepoint,
   
   #INJECTIONPOINT
   # Fit other models for the points of this timepoint
-  aux_fits = fit.aux.models(orig_list, point_wavelength, point_tp, param)
+  aux_fits = fit.aux.models(orig_list, point_wavelength, point_tp, param, group_name)
     
   
   # Melt the data frame to long format

@@ -66,7 +66,7 @@ import.matlab.results = function(files_points, files_spectra, files_stats, files
     contrib[[group]][[timepoint]][[model_name]]$k1 = contribs$k1
     contrib[[group]][[timepoint]][[model_name]]$k2 = contribs$k2
     contrib[[group]][[timepoint]][[model_name]] = 
-      concontribution.wrapper(contribs, contrib[[group]][[timepoint]][[model_name]], model_name)
+      contribution.wrapper(contribs, contrib[[group]][[timepoint]][[model_name]], model_name)
     
   }
   
@@ -76,6 +76,9 @@ import.matlab.results = function(files_points, files_spectra, files_stats, files
 recompute.fit.stats = function(stat_in, n, K, y_in, y_fit, error, w) {
   
   res = abs(y_in - y_fit)
+  
+  # TODO!
+  # Recheck the weighed R2
   res_weighed = res * w
   
   # Rsquare in general
@@ -135,7 +138,7 @@ recompute.fit.stats = function(stat_in, n, K, y_in, y_fit, error, w) {
   
 }
 
-concontribution.wrapper = function(contribs, contrib, model_name) {
+contribution.wrapper = function(contribs, contrib, model_name) {
   
   # Now in Matlab we had all the parameters always in the matrix x0
   # used by fmincon, but depending on the model, not all the variables
@@ -284,8 +287,24 @@ convert.lists.to.df.for.timepoint.plot = function(model_names,
     fits_to_plot[[model_names[var]]] = fit_tp[[model_names[var]]]
   }
   
-  # POINTS IN
   
+  # ------------------------
+  # TODO!
+  # ------------------------
+  # NOW A TOTALLY GHETTO FIX HERE
+  # In the original Najjar et al. dataset, the wavelength vectors were
+  # always the same which is not anymore the case with Brainard et al. 
+  # and Thapan et al. which used different wavelengths, now only the Thapan is saved to input
+  
+  # If there is a mismatch between x and y
+  # i.e. only works for Brainard (and not your added custom datasets later on)
+  if (length(point_wavelength) == 6 & length(point_tp[[model_names[1]]]$Melatonin.CA.) == 9) {
+    point_wavelength = c(420, 440, 460, 480, 505, 530, 555, 575, 600)
+    warning('Ghetto fix for Brainard et al. (2001) data. Modify this if you start adding more datasets')
+    # these are the wavelengths used by Brainard et al. (2001)
+  }
+  
+  # POINTS IN
   points_in = data.frame(x            = point_wavelength, 
                          y            = point_tp[[model_names[1]]]$Melatonin.CA.,
                          
@@ -363,6 +382,7 @@ plot.time.evolution = function(contrib, param_out, param) {
   param[['parameters_to_plot']] = param[['aux_metrics']]
   aux_reshape_out = reshape.param.out(param_out, param, var_name = 'aux_fits')
     aux_reshaped = aux_reshape_out[[1]]
+    
   aux_df = trim.list.to.desired.variables(aux_reshaped, timepoint_names, param[['what_to_output']],
                                               param_out, param)    
   
@@ -447,7 +467,7 @@ trim.list.to.desired.variables = function(list_in, timepoint_names, what_to_outp
           
           value_vector = list_in[[group_name]][[model]][[parameter]]
           
-          aux_vector = aux_fits[[group_name]][[model]][[parameter]]
+          # aux_vector = aux_fits[[group_name]][[model]][[parameter]]
           
           timepoint_name_vector = timepoint_names
           group_vector = rep(group_name, no_of_entries)
