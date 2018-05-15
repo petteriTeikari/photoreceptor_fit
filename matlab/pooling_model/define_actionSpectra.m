@@ -47,6 +47,11 @@ function actSpectra = define_actionSpectra(lambda, peak, group, templates, callF
             
             % do nothing, placeholder filter
             lensFilter_template = ones(length(lensFilter_nomogram),1);
+            
+        else
+            
+            lensFilter_template = ones(length(lambda),1);
+            
         end
         
         % plot(lambda, [lensFilter_stdObs lensFilter_nomogram_OLD lensFilter_template_OLD])

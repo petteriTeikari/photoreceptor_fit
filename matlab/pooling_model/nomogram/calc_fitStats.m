@@ -71,9 +71,9 @@ function out = calc_fitStats(exp, y, weights_for_fit, K, mode)
         
     elseif strcmp(mode, 'spectrum')    
         
-        [y exp S_diff_resid]
-        weights_for_fit
-        S_diff_w        
+        % [y exp S_diff_resid]
+        % weights_for_fit
+        % S_diff_w        
         
         out.R2 = R2 + 1;
         out.AIC = AIC;        

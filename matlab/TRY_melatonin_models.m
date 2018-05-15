@@ -41,7 +41,9 @@ function TRY_melatonin_models()
     
     for norm = 1 : length(normalize_method)
         for model = 1 : length(model_strings)
-            for tp = 1 : length(OLD)            
+            for tp = 1 : length(OLD)      
+                
+                disp([norm model tp])
 
                 % NORMALIZE, always the same independent of the model type                
                 [OLD_norm{tp}{norm}, OLD_stats{tp}{norm}] = normalize_time_point(OLD{tp}, ...

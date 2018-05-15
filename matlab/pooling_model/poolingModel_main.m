@@ -139,6 +139,13 @@ function [spec, points, stats, actSpectra, x, fval, output_struct, statParam, x0
             
         %% Optimize using fmincon   
             [x, fval, exitflag, output_struct] = fmincon(f,x0,A,b,Aeq,beq,lb,ub,nonlcon,optimOpt);
+            
+                % Confidence intervals are usually given with respect to estimates of parameters describing data. 
+                % (Examples are the mean, standard deviation, standard error of the estimate, and so forth.) 
+                % If you are fitting data, you should be using lsqcurvefit. 
+                % The fmincon function does not return covariance matrices on the parameters it optimises, 
+                % so you cannot calculate confidence intervals on those estimates.
+                % https://uk.mathworks.com/matlabcentral/answers/139728-how-to-get-confidence-interval-with-fmincon-optimization
            
             % After optimization, obtain the spectrum and statistical
             % parameters with the optimized values
