@@ -7,7 +7,7 @@ function [spec, points, stats, actSpectra, x, fval, output_struct, statParam, x0
     % Biological Cybernetics 16:65–67. 
     % http://dx.doi.org/10.1007/BF00271628.
     
-    close all % close all open figures  
+    % close all % close all open figures  
     
     %% MODEL options
     

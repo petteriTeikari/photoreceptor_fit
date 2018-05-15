@@ -30,7 +30,7 @@ function TRY_melatonin_models_for_CUSTOM_data()
 
     % Parameters
     normalize_method = {'nonneg_maxnorm'}; % raw
-    model_strings = {'opponent_(+L-M)-S'}; % {'opponent_(+L-M)-S'};
+    model_strings = {'simple'; 'opponent_(L-M)'; 'opponent_(M+L)-S'; 'opponent_(+L-M)-S'}; % {'opponent_(+L-M)-S'};
     error_for_fit_string = 'variance_relative'; % 'variance_relative'; % ; % 'variance_relative';
     fit_domain = 'lin';    
     
@@ -38,6 +38,7 @@ function TRY_melatonin_models_for_CUSTOM_data()
         
     for norm = 1 : length(normalize_method)
         for model = 1 : length(model_strings)            
+            
             for dataset = 1 : length(CUSTOM_META.strNames)
                 
                 [norm model dataset]
@@ -55,13 +56,16 @@ function TRY_melatonin_models_for_CUSTOM_data()
                 CUSTOM_FIT{dataset}{norm}{model} = fit_out;
                 
             end 
+            
+            disp(model_strings{model})
+            visualize_pooling_models_for_CUSTOM(CUSTOM_FIT, CUSTOM_stats, ...
+                                            model_strings{model}, normalize_method{norm}, ... 
+                                            dataset, norm, model, error_for_fit_string, ...
+                                            CUSTOM_META.strNames, scrsz)            
         end
     end
     
-    visualize_pooling_models_for_CUSTOM(CUSTOM_FIT, CUSTOM_stats, ...
-                                            model_strings{model}, normalize_method{norm}, ... 
-                                            dataset, norm, model, error_for_fit_string, ...
-                                            CUSTOM_META.strNames, scrsz)
+   
 
 
     

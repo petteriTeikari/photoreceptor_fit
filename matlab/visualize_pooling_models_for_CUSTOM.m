@@ -5,13 +5,14 @@ function visualize_pooling_models_for_CUSTOM(CUSTOM_FIT, CUSTOM_stats, ...
     
     save('visual_var.mat')
     % load('visual_var.mat')
-    close all
+    % close all
    
     plotStyle.xLims = [400 640];
    
     filename_core = ['melfit___', model_string, '___'];
                
-    % YOUNG
+    % CUSTOM
+    model_ind
     group_plot(CUSTOM_FIT, CUSTOM_stats, 'CUSTOM',...
                  model_string, normalize_method, filename_core, ...
                  dataset_ind, norm_ind, model_ind, error_for_fit_string, ...
@@ -28,7 +29,7 @@ function group_plot(FIT, STATS, group, ...
 
     % Subplot layout 
     fig = figure('Color', 'w',... 
-                 'Position', [0.05*scrsz(3) 0.725*scrsz(4) 0.92*scrsz(3) 0.15*scrsz(4)]);
+                 'Position', [0.05*scrsz(3) 0.325*scrsz(4) 0.92*scrsz(3) 0.55*scrsz(4)]);
         
     no_of_timepoints = length(timepoints_strings);
     rows = 4; % young, old
@@ -202,8 +203,7 @@ function residual_plot(fit_per_tp, stat_per_tp, error_for_fit_string, filename_t
       fileName = mfilename; 
       fullPath = mfilename('fullpath');
       path_Code = strrep(fullPath, fileName, '');
-      path_Data = fullfile(path_Code, '..', 'data_out_from_matlab', 'custom');     
-      
+      path_Data = fullfile(path_Code, '..', 'data_out_from_matlab', 'custom');           
          
       % write to disk
       % https://www.mathworks.com/matlabcentral/answers/246922-how-to-add-headers-to-a-data-matrix
@@ -234,7 +234,8 @@ function residual_plot(fit_per_tp, stat_per_tp, error_for_fit_string, filename_t
       mat_out = fit_per_tp.final_x';
       output = [header; num2cell(mat_out)];
       output_table = cell2table(output);
-      writetable(output_table, full_path, 'WriteVariableNames', false)
+      disp(['Saving ', full_path])
+      writetable(output_table, filename_out, 'WriteVariableNames', false)
       
       % set(s, 'XLim', plotStyle.xLims)
       if tp == 1
