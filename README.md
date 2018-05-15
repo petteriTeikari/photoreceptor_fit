@@ -19,6 +19,9 @@ _The messy plotting everything version_
 
 _Clearer plot with only model. The younger data is not really represented well with the model? Some sort of trends can be seen in the OLD data in accordance with the **story** that the photoreceptor contributions **change** and are not constant and how melatonin suppression spectral sensitivity cannot be really expressed by a single action spectrum (analogous to nonlinear mesopic sensitivity)_
 
+![YOUNG](https://github.com/petteriTeikari/photoreceptor_fit/blob/master/figures_out/R_evolution_melanopsinsNotReallyMatching.png "YOUNG")
+_Tracking how well the melanopic explains the data_
+
 **TODO!** for the paper, you could pick couple of those parameters and compare those to the **R^2** of the **melanopic template** by Lucas _et al._ and some parameter from Simon? 
 
 **Scroll-down** for how the McDougal and Gamlin (2010) plotted the evolution.
