@@ -1,0 +1,3 @@
+[submodule "quick_pooling"]
+	path = quick_pooling
+	url = https://github.com/petteriTeikari/quick_pooling
